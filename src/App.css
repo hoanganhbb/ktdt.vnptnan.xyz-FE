@@ -36,3 +36,16 @@
     transform: rotate(360deg);
   }
 }
+
+.ql-toolbar.ql-snow {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.ql-container {
+  font-size: 14px !important;
+}
+
+.ql-editor {
+  height: 150px !important;
+}

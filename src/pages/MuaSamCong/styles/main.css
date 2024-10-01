@@ -1,0 +1,349 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
+    'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+/*1700553700000*/
+.ant-empty-description {
+  display: none;
+}
+
+.ant-empty-image::after {
+  content: 'Đề nghị chọn loại công trình trong danh mục';
+}
+
+.ant-empty-image {
+  color: #2d2d2d;
+}
+
+.btn-reNew {
+  border: 0;
+  color: white;
+  background: #0f4871;
+  border-radius: 8px;
+  padding: 9px 16px;
+  height: 100%;
+  width: 20px;
+}
+
+.content__body__left__item__infor__notice--brown {
+  background-color: #ab6f12;
+  padding: 4px 12px;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.content__body__left__item__infor__notice--beige {
+  background-color: #f3c030;
+  padding: 4px 12px;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.content__body__left__item__infor__notice--orange--red {
+  background-color: #f37630;
+  padding: 4px 12px;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.tag-new {
+  background-color: red;
+  color: white;
+  padding: 0 10px;
+  border-radius: 27px 0 27px 10px;
+  margin-left: 8px;
+  position: absolute;
+  top: 20px;
+  right: 40px;
+  font-size: 9px;
+}
+
+.filter__modal__keyword__btn {
+  border: 0;
+  padding: 0 9px;
+  border-radius: 8px;
+  background-color: #0f4871;
+  color: #fff;
+}
+
+.highlight {
+  color: red;
+}
+
+.filter__modal__keywork__tag {
+  background-color: #f5f5f5;
+  padding: 4px 8px;
+  font-size: 12px;
+  margin: 4px;
+  border-radius: 1rem;
+  color: #595959;
+}
+
+.ant-select-dropdown-menu-item {
+  font-weight: 500 !important;
+}
+
+.ant-select-selection-selected-value {
+  font-weight: 500 !important;
+}
+
+.content__search__list {
+  align-self: auto !important;
+}
+
+.new-logo-personal-page {
+  font-size: 10px;
+  font-weight: 700;
+  padding-top: 0.2em;
+  position: relative;
+  top: 73%;
+  left: 45%;
+  transform: translate(-50%, -50%);
+  right: 12px;
+  background: #e14337;
+  color: #fff;
+  border-radius: 8px 0;
+  height: 20px;
+  width: 20px;
+}
+
+#search-advantage-haunt .content__body__session__title {
+  font-weight: 600 !important;
+  font-size: 15px !important;
+  margin-right: 12px !important;
+}
+
+#search-advantage-haunt .check-radio-grocup label {
+  font-size: 15px !important;
+  font-weight: 500 !important;
+}
+
+#search-advantage-haunt .check-box-group-2 label {
+  font-size: 15px !important;
+  font-weight: 500 !important;
+}
+
+.download__guide {
+  width: 100%;
+  font-style: italic;
+  cursor: pointer;
+  color: #be8a4b;
+}
+
+.content__search__title__option label:nth-child(2) {
+  opacity: 1 !important;
+}
+
+.content__search__item .label {
+  opacity: 1 !important;
+}
+
+#home .content__body__options__item__text {
+  font-size: 20px !important;
+}
+
+a.tags-tab.active.test {
+  background: #f5c0bc;
+}
+
+.new_nav_tab:has(.active) {
+  color: white;
+  background: #be8a4b;
+  border-bottom: 2px solid;
+}
+
+.new_nav_tab .active {
+  color: white !important;
+}
+
+.new_nav_tab a {
+  color: #595959 !important;
+}
+
+.new_nav_tab {
+  background: #fff5e1;
+  padding: 8px 32px;
+  color: #595959;
+}
+
+#search-home .content__body__left__nav {
+  border-bottom: 1px solid #d9d9d9;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.pagination {
+  margin: 0;
+}
+
+@media (max-width: 1024px) {
+  #search-home .content__body__left__nav {
+    flex-direction: column;
+  }
+
+  .pagination {
+    margin: 10px 0 10px 0;
+  }
+}
+
+.el-tooltip__popper {
+  width: 300px !important;
+}
+
+.width_date_antdv {
+  width: 47%;
+}
+
+.width_date_space_antdv {
+  width: 4%;
+  margin: 0 10px 0 10px;
+}
+
+th {
+  background: #fafafa !important;
+}
+
+.el-tooltip__popper {
+  width: 300px !important;
+}
+
+select.form-control {
+  background-image: none;
+}
+
+.el-pagination.is-background {
+  padding: 0;
+}
+
+.el-pagination.is-background .el-pager li:not(.disabled).active,
+.el-pager li:hover {
+  background-color: #0f4871 !important;
+  color: #fff !important;
+}
+
+a {
+  cursor: pointer;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 150%;
+  left: 50%;
+  margin-left: -60px;
+}
+
+.tooltip .tooltiptext::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: black transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+.search-button:hover {
+  background-color: #a36822;
+}
+
+.format__text {
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.format__text__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.content__body__left__item__infor__notice--be {
+  background-color: #fae6bd;
+  padding: 4px 12px;
+  border-radius: 12px;
+  color: #262626;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.button__search:hover {
+  background-color: #a36822;
+}
+
+.disable_select_filter {
+  cursor: not-allowed !important;
+}
+
+.egp-field-error-msg {
+  color: red;
+  font-size: 13px;
+}
+
+.field-error {
+  border: 1px solid red !important;
+}
+
+.cancel-choose-filter {
+  color: white;
+  background-color: #0f4871;
+  padding: 0 16px;
+  border-radius: 8px;
+  outline: 0;
+  border: 0;
+  margin-left: 12px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.cancel-choose-filter:hover {
+  background-color: #0f4871;
+}
+
+.word-white {
+  color: #fff !important;
+}
+
+.row {
+  margin: 0 !important;
+}
