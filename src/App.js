@@ -11,7 +11,6 @@ import ExamDetail from './pages/MarkTest/ExamDetail';
 import InfomationProjects from './pages/InfomationProjects';
 import CongViecKTDT from './pages/CongViecKTDT';
 import MuaSamCongPage from './pages/MuaSamCong';
-import CustomizePage from './pages/Customize';
 import FormDuAnCNTT from './pages/FormDuAnCNTT';
 import FormTarget from './pages/FormTarget';
 import FormCreateDuAn from './pages/FormCreateDuAn';
@@ -29,7 +28,6 @@ function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/customize/*" element={<CustomizePage />} />
       <Route element={<ProtectedLayout />}>
         <Route exact path="/" element={<HomeLayout />} />
         <Route exact path="/duancntt" element={<HomePage />} />
