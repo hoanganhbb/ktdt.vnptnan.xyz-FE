@@ -10,7 +10,7 @@ function DetailThueBaoOneBSS({ ma_thue_bao }) {
 
   const fetchData = async () => {
     const results = await axios.post(`https://cskh.vnptnghean.com.vn:1443/KTDT/CHITIET_TB_CNTT`, {
-      MA_TB: ma_thue_bao,
+      MA_TB: `'${ma_thue_bao}'`,
       hashkeyInput: md5(
         `CNTT_${dayjs().format('YYYY')}${dayjs().format('MM')}${dayjs().format('DD')}${dayjs().format('HH')}`
       ).toLocaleUpperCase(),

@@ -33,6 +33,8 @@ export const MenuItemWrapper = styled.div`
   padding-left: 10px;
   margin-bottom: 15px;
   cursor: pointer;
+  display: flex;
+    align-items: center;
 
   .top-dot {
     position: absolute;
@@ -81,12 +83,9 @@ export const MenuItemWrapper = styled.div`
   .icon-wrap {
     width: 30px;
     text-align: center;
-    display: inline-block;
     margin-right: 15px;
+    display: inline-flex;
+    justify-content: center;
 
-    svg {
-      position: relative;
-      top: 3px;
-    }
   }
 `;

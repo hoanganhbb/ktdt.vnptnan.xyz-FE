@@ -61,7 +61,7 @@ function ThueBaoOneBSS({ duancntt }) {
                 justify="space-between"
                 style={{ borderBottom: '1px solid #ccc', fontWeight: 500 }}
               >
-                <div style={{ padding: '4px 0' }} onClick={() => setSelected(ele)}>
+                <div style={{ padding: '6px 0', cursor: 'pointer' }} onClick={() => setSelected(ele)}>
                   {ele?.ma_thue_bao}
                 </div>
                 <Flex

@@ -23,6 +23,7 @@ import ReportPage from './pages/Report';
 import BaoCaoDoanhThuCNTTPage from './pages/BaoCaoDoanhThuCNTT';
 import BaoCaoDoanhThuTongHop from './pages/BaoCaoDoanhThuCNTT/BaoCaoDoanhThuTongHop';
 import BaoCaoDoanhThuHoachToan from './pages/BaoCaoDoanhThuCNTT/BaoCaoDoanhThuHoachToan';
+import SettingsDoanhThu from './pages/SettingsDoanhThu';
 
 function App() {
   return (
@@ -60,6 +61,7 @@ function App() {
       </Route>
       <Route path="" element={<ProtectedLayout />}>
         <Route path="/report" element={<ReportPage />} />
+        <Route path="/report/settings" element={<SettingsDoanhThu />} />
       </Route>
       <Route path="*" element={<NotFoundPage />}></Route>
     </Routes>

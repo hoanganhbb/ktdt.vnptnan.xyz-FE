@@ -1,14 +1,32 @@
 import MainLayout from '../../components/MainLayout';
-import { Row, Col, Flex } from 'antd';
+import { Row, Col, Flex, Button } from 'antd';
 import React from 'react';
 import { FaSheetPlastic } from 'react-icons/fa6';
 import { colors } from '../../utils/theme';
 import { useNavigate } from 'react-router-dom';
+import { MdSettings } from 'react-icons/md';
 
 function BaoCaoDoanhThuCNTTPage() {
   const navigate = useNavigate();
   return (
     <MainLayout>
+      <Flex justify="space-between" align="center" style={{ marginBottom: 10 }}>
+        <div
+          style={{
+            fontSize: 18,
+            fontWeight: 600,
+
+            color: colors.blue[800]
+          }}
+        >
+          Báo cáo doanh thu CNTT theo hợp đồng, hóa đơn và hạch toán
+        </div>
+        <Button
+          type="primary"
+          icon={<MdSettings color={colors.white} size={20} />}
+          onClick={() => navigate('/report/settings')}
+        ></Button>
+      </Flex>
       <Row gutter={16}>
         <Col xs={8} onClick={() => navigate('/baocao/doanhthutonghop')}>
           <div

@@ -1,14 +1,17 @@
-body {
-  font-family: 'Inter', sans-serif;
-}
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap');
 
+:root,
 body {
-  margin: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Nunito Sans', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  margin: 0;
 }
-
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }

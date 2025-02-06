@@ -21,8 +21,8 @@ root.render(
         sizeUnit: 3,
         wireframe: true,
         controlOutlineWidth: 0,
-        fontFamily: 'Inter',
-        rowHoverBg: '#B3E5FC'
+        rowHoverBg: '#B3E5FC',
+        fontFamily: 'Nunito Sans'
 
         // Alias Token
         // colorBgContainer: '#f6ffed'
