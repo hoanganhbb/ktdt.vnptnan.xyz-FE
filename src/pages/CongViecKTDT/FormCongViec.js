@@ -3,6 +3,7 @@ import { Button, Col, DatePicker, Form, Input, Row, Select, Typography } from 'a
 // import moment from 'moment';
 import requestAPI from '../../utils/requestAPI';
 import { toast } from 'sonner';
+import { PERSON_KTDT } from '../../utils/constant';
 
 function FormCongViec({ danhmuc, onFinish }) {
   const [form] = Form.useForm();
@@ -83,7 +84,7 @@ function FormCongViec({ danhmuc, onFinish }) {
         <Form.Item label="Cá nhân chủ trì" name="ca_nhan_chu_tri" required>
           <Select
             options={danhmuc.users.filter(
-              item => ![38, 59, 15, 24, 34, 16, 35, 33, 86].includes(item.id) && !!item.name.trim()
+              item => PERSON_KTDT.includes(item.id)
             )}
             fieldNames={{ label: 'name', value: 'id' }}
           />
@@ -92,7 +93,7 @@ function FormCongViec({ danhmuc, onFinish }) {
           <Select
             mode="multiple"
             options={danhmuc.users.filter(
-              item => ![38, 59, 15, 24, 34, 16, 35, 33, 86].includes(item.id) && !!item.name.trim()
+              item => PERSON_KTDT.includes(item.id)
             )}
             fieldNames={{ label: 'name', value: 'id' }}
           />

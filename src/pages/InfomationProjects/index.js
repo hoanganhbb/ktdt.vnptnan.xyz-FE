@@ -17,7 +17,6 @@ import { ArrowLeft } from 'react-bootstrap-icons';
 import { MdDownload } from 'react-icons/md';
 import { BiSolidQuoteLeft } from 'react-icons/bi';
 import FormDoanhThu from './FormDoanhThu';
-import ThueBaoOneBSS from './ThueBaoOneBSS';
 
 function InfomationProjects() {
   const navigate = useNavigate();
@@ -44,6 +43,20 @@ function InfomationProjects() {
         }, 300)
       );
   };
+
+  const handleDownload = (tailieu) => {
+    setIsLoading(true)
+    requestAPI.get(`api/duancntt/tailieu/${tailieu.id}/download`, {
+      responseType: 'blob'
+    }).then(res => {
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${tailieu.ten_tai_lieu}.${tailieu.file_name}`);
+      document.body.appendChild(link);
+      link.click();
+    }).finally(() => setIsLoading(false))
+  }
 
   useEffect(() => {
     fetchData();
@@ -157,7 +170,7 @@ function InfomationProjects() {
 
                   <div style={{ height: 10 }}></div>
 
-                  <Flex
+                  {/* <Flex
                     style={{ marginBottom: 6, borderBottom: '1px solid #eeeeee', paddingBottom: 2 }}
                     justify="space-between"
                   >
@@ -165,17 +178,17 @@ function InfomationProjects() {
                     <span>
                       {data?.gia_tri_thiet_bi_truoc_VAT ? formatCash(data?.gia_tri_thiet_bi_truoc_VAT) + ' VNĐ' : ''}
                     </span>
-                  </Flex>
+                  </Flex> */}
 
-                  <Flex
+                  {/* <Flex
                     style={{ marginBottom: 6, borderBottom: '1px solid #ccc', paddingBottom: 2 }}
                     justify="space-between"
                   >
                     <span style={{ fontWeight: 600 }}>VAT thiết bị/đào tạo: </span>
                     <span>{data?.gia_tri_VAT_thiet_bi ? formatCash(data?.gia_tri_VAT_thiet_bi) + ' VNĐ' : ''}</span>
-                  </Flex>
+                  </Flex> */}
 
-                  <Flex
+                  {/* <Flex
                     style={{ marginBottom: 6, borderBottom: '1px solid #eeeeee', paddingBottom: 2 }}
                     justify="space-between"
                   >
@@ -191,20 +204,23 @@ function InfomationProjects() {
                   >
                     <span style={{ fontWeight: 600 }}>VAT thuê dịch vụ: </span>
                     <span>{data?.gia_tri_hop_dong_VAT ? formatCash(data?.gia_tri_hop_dong_VAT) + ' VNĐ' : ''}</span>
-                  </Flex>
+                  </Flex> */}
 
-                  <Flex
+                  {/* <Flex
                     style={{ marginBottom: 6, borderBottom: '1px solid #ccc', paddingBottom: 2 }}
                     justify="space-between"
                   >
                     <span style={{ fontWeight: 600 }}>TỔNG GIÁ TRỊ HĐ: </span>
                     <span>
-                      {formatCash(data?.gia_tri_thiet_bi_truoc_VAT +
+                      {formatCash(
+                        data?.gia_tri_thiet_bi_truoc_VAT +
                         data?.gia_tri_VAT_thiet_bi +
                         data?.gia_tri_hop_dong_truoc_VAT +
-                        data?.gia_tri_hop_dong_VAT)} VNĐ
+                        data?.gia_tri_hop_dong_VAT
+                      )}{' '}
+                      VNĐ
                     </span>
-                  </Flex>
+                  </Flex> */}
 
                   <div style={{ height: 18 }}></div>
 
@@ -263,7 +279,13 @@ function InfomationProjects() {
                   <div style={{ marginBottom: 4 }}>
                     <div style={{ fontWeight: 600, marginBottom: 6 }}>Tài liệu đính kèm: </div>
                     {data.tai_lieu?.map(tailieu => (
-                      <a href={tailieu.url} target="_blank" rel="noreferrer" key={tailieu.id}>
+                      <a
+                        // href={`api/duancntt/tailieu/${tailieu.id}/download`}
+                        target="_blank"
+                        rel="noreferrer"
+                        key={tailieu.id}
+                        onClick={() => handleDownload(tailieu, id)}
+                      >
                         <Flex
                           align="center"
                           style={{ marginBottom: 10, borderBottom: '1px solid #E2E8F0', paddingBottom: 4 }}
@@ -279,10 +301,6 @@ function InfomationProjects() {
                           </Flex>
                           <MdDownload
                             size={22}
-                            onClick={e => {
-                              e.preventDefault();
-                              window.open(tailieu.url);
-                            }}
                           />
                         </Flex>
                       </a>
@@ -390,7 +408,7 @@ function InfomationProjects() {
               )}
               id={data.id}
             /> */}
-            <ThueBaoOneBSS duancntt={data.id}></ThueBaoOneBSS>
+            {/* <ThueBaoOneBSS duancntt={data.id}></ThueBaoOneBSS> */}
           </>
         )}
       </MainLayout>

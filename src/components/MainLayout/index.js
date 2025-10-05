@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { isMobile } from 'react-device-detect';
 import { Menu } from 'react-feather';
 import { IoFileTrayStacked } from 'react-icons/io5';
-import { FaChartLine } from 'react-icons/fa6';
+// import { FaChartLine } from 'react-icons/fa6';
 import requestAPI from '../../utils/requestAPI';
 
 // if (isMobile) alert('Vui lòng xoay ngàng điện thoại để sử dụng')
@@ -59,7 +59,7 @@ export default function MainLayout({ children }) {
         <div className="user-infomation">
           <Flex vertical justify="center" style={{ marginRight: 10 }}>
             <div style={{ color: 'white', fontSize: 16, fontWeight: 600, marginBottom: 3, lineHeight: 1 }}>
-              {PROFILES?.users.find(e => e.username === user?.username)?.name}
+              {user?.name}
             </div>
             <div
               style={{
@@ -118,19 +118,19 @@ export default function MainLayout({ children }) {
               minHeight: '100%'
             }}
           >
-            {(roleGroup?.includes('adminstrator') || roleGroup?.includes('chuyen_vien_ktdt')) && (
+            {/* {(roleGroup?.includes('adminstrator') || roleGroup?.includes('chuyen_vien_ktdt')) && (
               <MenuItem title="Công việc KTĐT" icon={<ListTask size={24}></ListTask>} path="congviec-ktdt"></MenuItem>
-            )}
+            )} */}
             {roleGroup?.includes('adminstrator') && (
               <MenuItem title="Quản lý công việc" icon={<ListTask size={24}></ListTask>} path="congviec"></MenuItem>
             )}
-            {(roleGroup?.includes('adminstrator') || roleGroup?.includes('trungtamvienthong')) && (
+            {/* {(roleGroup?.includes('adminstrator') || roleGroup?.includes('trungtamvienthong')) && (
               <MenuItem
                 title="Báo cáo CNTT địa bàn"
                 icon={<FaChartLine size={22}></FaChartLine>}
                 path="baocao/cntt-dia-ban"
               ></MenuItem>
-            )}
+            )} */}
             {PROFILES?.permission?.includes('du_an_cap_tinh') && (
               <MenuItem
                 title="Dự án CNTT cấp tỉnh"
@@ -145,22 +145,22 @@ export default function MainLayout({ children }) {
                 path="duancaphuyen"
               ></MenuItem>
             )}
-            {roleGroup?.includes('adminstrator') &&
+            {/* {roleGroup?.includes('adminstrator') &&
               ['phanducanh.nan', 'nttung.nan', 'tulc.nan'].includes(user.username) && (
                 <MenuItem
                   title="Báo cáo dự án hết hạn"
                   icon={<FaChartLine size={22}></FaChartLine>}
                   path="report"
                 ></MenuItem>
-              )}
-            {roleGroup?.includes('adminstrator') &&
+              )} */}
+            {/* {roleGroup?.includes('adminstrator') &&
               ['phanducanh.nan', 'nttung.nan', 'tulc.nan', 'tonnhat.vtna'].includes(user.username) && (
                 <MenuItem
                   title="Báo cáo doanh thu CNTT"
                   icon={<FaChartLine size={22}></FaChartLine>}
                   path="baocao/doanhthu"
                 ></MenuItem>
-              )}
+              )} */}
           </Sider>
         )}
         <Layout>

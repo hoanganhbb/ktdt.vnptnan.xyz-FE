@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Select, Button, Flex } from 'antd';
-import { LOAI_TB_DATA, TTVT_DATA } from '../../utils/constant';
+// import { LOAI_TB_DATA } from '../../utils/constant';
 import { colors } from '../../utils/theme';
 import axios from 'axios';
 import dayjs from 'dayjs';
@@ -51,7 +51,7 @@ function TimKiemThueBaoOne({ du_an_cntt, onSuccess }) {
     <div style={{ background: colors.white, borderRadius: 8, padding: 10 }}>
       <div style={{ fontWeight: 500, color: colors.blue[800], marginBottom: 4 }}>Tìm kiếm thuê bao oneBSS</div>
       <Select
-        options={TTVT_DATA}
+        options={[]}
         fieldNames={{ label: 'TEN_DV', value: 'DONVI_ID' }}
         style={{ width: '40%' }}
         placeholder="Đơn vị"
@@ -64,7 +64,7 @@ function TimKiemThueBaoOne({ du_an_cntt, onSuccess }) {
         }
       ></Select>{' '}
       <Select
-        options={LOAI_TB_DATA}
+        options={[]}
         fieldNames={{ label: 'LOAIHINH_TB', value: 'LOAITB_ID' }}
         style={{ width: '40%' }}
         placeholder="Dịch vụ"

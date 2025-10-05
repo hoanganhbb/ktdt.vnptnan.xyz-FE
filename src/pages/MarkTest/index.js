@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import moment from 'moment';
 import queryString from 'query-string';
 import LoadCongViec from './LoadCongViec';
+import { useAuth } from '../../hooks/useAuth';
 
 const checkIsDealine = data => {
   const deadline = moment(data.ngay_het_han).diff(moment(new Date()), 'days');
@@ -23,25 +24,32 @@ const checkIsDealine = data => {
 
 function MarkTest() {
   // const navigate = useNavigate();
-  // const { user } = useAuth();
+  const { user } = useAuth();
+
   const [dataFilter, setDataFilter] = useState([]);
   const [danhmuc, setDanhMuc] = useState();
   const [modalCongViec, setModalCongViec] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [searchValue, setSearchValue] = useState({
     don_vi_chu_tri: '',
-    status: 2,
+    status: 1,
     expired: 1,
-    sort: 1
+    sort: 1,
+    p: 1,
+    lanh_dao_vtt: user?.id
+  });
+
+  const [pagination, setPagination] = useState({
+    total: 0,
+    pageSize: 50
   });
 
   const fetchData = async isLoading => {
     if (isLoading) setIsLoading(true);
-    Promise.all([requestAPI.get(`api/profile/`)])
-      .then(res => {
-        setDanhMuc(res[0].data);
-      })
-      .finally(() => setIsLoading(false));
+    Promise.all([requestAPI.get(`api/profile/`)]).then(res => {
+      setDanhMuc(res[0].data);
+    });
+    // .finally(() => setIsLoading(false));
   };
 
   const handleDelete = id => {
@@ -96,12 +104,17 @@ function MarkTest() {
         .map(key => {
           return `${key}=${encodeURIComponent(searchValue[key])}`;
         })
-        .join('&');
+        .join('&') +
+      `&page_size=${pagination?.pageSize}`;
     setIsLoading(true);
     requestAPI
       .get(`api/congviec/${str}`)
       .then(res => {
-        setDataFilter(handleFilter(res.data, searchValue));
+        setPagination({
+          total: res.data?.count,
+          pageSize: 50
+        });
+        setDataFilter(handleFilter(res.data?.results, searchValue));
       })
       .finally(() => setIsLoading(false));
   };
@@ -135,10 +148,10 @@ function MarkTest() {
 
   return (
     <MainLayout>
-      <Spin spinning={isLoading}>
+      <Spin spinning={isLoading} tip="Đang tải dữ liệu...">
         <HomeWrapper>
           {!isLoading && danhmuc && (
-            <Row gutter={16} style={{ marginBottom: 10, background: 'white', padding: 10, borderRadius: 6 }}>
+            <Row gutter={16} style={{ marginBottom: 10, background: 'white', padding: 8, borderRadius: 6 }}>
               <Col span="6">
                 <div>
                   <Typography.Text>Đơn vị thực hiện</Typography.Text>
@@ -253,11 +266,20 @@ function MarkTest() {
             dataSource={dataFilter}
             size="small"
             rowKey="id"
+            isLoading={isLoading}
             rowClassName={record =>
               checkIsDealine(record).quahan && !checkIsDealine(record).isComplete ? 'task-expired' : 'task-normal'
             }
             pagination={{
-              pageSize: 40
+              pageSize: pagination?.pageSize,
+              total: pagination?.total,
+              current: searchValue.p,
+              onChange: page => {
+                setSearchValue({
+                  ...searchValue,
+                  p: page
+                });
+              }
             }}
             columns={[
               {

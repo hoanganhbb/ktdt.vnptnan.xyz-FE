@@ -14,39 +14,48 @@ export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setLoading(true);
-    requestAPI
-      .post(
-        'api/token/',
-        {
-          username,
-          password
-        },
-        {
-          headers: {
-            'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'
-          }
-        }
-      )
-      .then(res => {
-        setAccessToken(res.data.access);
-        login({
-          username
-        });
-        // requestAPI
-        //   .get('users/me', {
-        //     headers: {
-        //       Authorization: `Bearer ${res.data.access}`
-        //     }
-        //   })
-        //   .then(response => {
-        //     login(response.data.user);
-        //   })
-        //   .finally(() => setLoading(false));
-      })
-      .catch(e => toast.error(JSON.stringify(e)))
-      .finally(() => setLoading(false));
+
+    const body = {
+      username,
+      password
+    };
+
+    const options = {
+      headers: {
+        'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'
+      }
+    };
+
+    try {
+      // 🛜 1. Gửi yêu cầu lấy token
+      const tokenRes = await requestAPI.post('api/token/', body, options);
+
+      const accessToken = tokenRes?.data?.access;
+      if (!accessToken) throw new Error('Không nhận được access token');
+
+      // 2. Lưu token vào localStorage
+      setAccessToken(accessToken);
+
+      // 🧑‍💻 3. Lấy thông tin profile
+      const profileRes = await requestAPI('/api/profile/');
+
+      const profileData = profileRes?.data;
+      const userInfo = profileData?.users?.find(user => user.username === username);
+
+      if (!userInfo) throw new Error('Không tìm thấy thông tin người dùng');
+
+      // ✅ 4. Lưu token & đăng nhập
+      login({ username, ...userInfo });
+
+      toast.success('Đăng nhập thành công');
+    } catch (err) {
+      console.error('❌ Lỗi đăng nhập:', err);
+      toast.error(err?.message || 'Đăng nhập thất bại');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -118,8 +127,8 @@ export default function LoginPage() {
             </Divider>
           </div>
         </ConfigProvider>
-      </div >
-    </LoginDestopWrapper >
+      </div>
+    </LoginDestopWrapper>
   );
 
   // if (isMobile)

@@ -169,7 +169,7 @@ export default function HomePage() {
               <Col
                 className="gutter-row"
                 style={{ marginBottom: 10, cursor: 'pointer' }}
-                span={4}
+                span={3}
                 onClick={() => {
                   setFilterCondition({
                     ...filterCondition,
@@ -181,18 +181,18 @@ export default function HomePage() {
                   style={{
                     background: '#F0FFF4',
                     borderRadius: 10,
-                    padding: 12,
+                    padding: 10,
                     boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
                     height: '100%'
                   }}
                 >
-                  <p style={{ textAlign: 'center', fontSize: 40, color: '#234E52', fontWeight: 700, margin: '10px 0' }}>
+                  <p style={{ textAlign: 'center', fontSize: 32, color: '#234E52', fontWeight: 700, margin: '10px 0' }}>
                     {formatCash(
                       data.reduce((acc, currentValue) => acc + currentValue.gia_tri_hop_dong, 0),
                       true
                     )}
                   </p>
-                  <p style={{ textAlign: 'center', color: '#234E52', fontWeight: 600, fontSize: 16 }}>TỔNG DOANH THU</p>
+                  <p style={{ textAlign: 'center', color: '#234E52', fontWeight: 600, fontSize: 14 }}>TỔNG DOANH THU</p>
                 </div>
               </Col>
 
@@ -217,11 +217,11 @@ export default function HomePage() {
                         style={{
                           color: filterCondition.linhVucDuAn === ele.id ? colors.white : colors.blue[`${index + 7}00`],
                           borderRadius: 10,
-                          padding: 12,
+                          padding: 10,
                           border: '1px solid #e9e9e9',
                           boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
                           height: '100%',
-                          width: 180,
+                          width: 160,
                           background:
                             filterCondition.linhVucDuAn === ele.id ? colors.blue[800] : `${colors.blue[100]}30`,
                           display: 'flex',
@@ -235,11 +235,11 @@ export default function HomePage() {
                         }}
                       >
                         <Flex align="flex-start" justify="space-between" style={{ flexDirection: 'column' }}>
-                          <div style={{ textAlign: 'center', fontWeight: 600, fontSize: 17 }}>{ele.name}</div>
+                          <div style={{ textAlign: 'center', fontWeight: 600, fontSize: 16 }}>{ele.name}</div>
                         </Flex>
                         <Flex justify="space-between" align="center">
                           <FaWallet size={26} color={colors.blue[200]} />
-                          <p style={{ textAlign: 'center', fontSize: 28, fontWeight: 600, margin: '10px 0' }}>
+                          <p style={{ textAlign: 'center', fontSize: 20, fontWeight: 600, margin: '10px 0' }}>
                             {formatCash(
                               data
                                 .filter(element => element.linh_vuc_du_an.includes(ele.id))
@@ -252,7 +252,7 @@ export default function HomePage() {
                     </Col>
                   ))}
             </Row>
-            <Flex style={{ background: 'white', padding: 16, borderRadius: 6, position: 'relative' }} gap={20}>
+            <Flex style={{ background: 'white', padding: 12, borderRadius: 6, position: 'relative' }} gap={20}>
               <div
                 style={{
                   width: '100%',
@@ -272,7 +272,7 @@ export default function HomePage() {
                   marginBottom: 5,
                   position: 'relative',
                   border: '1px dashed #71717a50',
-                  padding: 10,
+                  padding: 8,
                   borderRadius: 10,
                   minWidth: 100
                 }}
@@ -281,7 +281,7 @@ export default function HomePage() {
                 <div
                   style={{
                     fontWeight: 800,
-                    fontSize: 40,
+                    fontSize: 20,
                     color: colors.blue[900],
                     position: 'absolute',
                     width: 10,
@@ -293,7 +293,7 @@ export default function HomePage() {
                     transform: 'translateX(-50%)'
                   }}
                 ></div>
-                <div style={{ fontWeight: 600, fontSize: 18, marginTop: 16 }}>{calculateSumIncomeCapTinh(data, ele)}</div>
+                <div style={{ fontWeight: 700, fontSize: 16, marginTop: 16 }}>{calculateSumIncomeCapTinh(data, ele)}</div>
               </Flex>)}
             </Flex>
           </>
@@ -333,7 +333,7 @@ export default function HomePage() {
                       }}
                     >
                       <Flex justify="space-between">
-                        <div style={{ fontSize: 16, fontWeight: 600, color: '#718096' }}>{item.ten_viet_tat}</div>
+                        <div style={{ fontSize: 16, fontWeight: 600, color: '#718999' }}>{item.ten_viet_tat}</div>
                         <div
                           style={{
                             fontWeight: 600,
