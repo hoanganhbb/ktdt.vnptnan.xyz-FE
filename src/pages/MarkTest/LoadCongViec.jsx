@@ -37,6 +37,7 @@ function LoadCongViec({ onSuccess }) {
         username: body.username,
         password: body.password
       });
+      console.log(result);
       if (result.status === 200) {
         setIsShowInputOTP(true);
         setOTPInfo(result.data);
@@ -51,7 +52,8 @@ function LoadCongViec({ onSuccess }) {
     setIsLoading(true);
     try {
       const result = await axios.post('https://eoffice.vnpt.vn/qlvb/api/validatesmsotp/', {
-        ...user,
+        username: user.username,
+        password: user.password,
         otp: valueOTP
       });
       if (result.status == '200') {
@@ -70,7 +72,8 @@ function LoadCongViec({ onSuccess }) {
     setIsLoading(true);
     axios
       .post('https://api-node.ktdt.vnptnan.xyz/login-eoffice', {
-        token_eoffice: result.data.data.token
+        token_eoffice: result.data.data.token,
+        username: user.username,
         // token_eoffice: '$2a$10$InZ2RNdJmuKfSgZTI0zlv.UXTMKGcoq1ND4E3lMpfV36tH3mnAHja'
       })
       .then(res => {
@@ -93,7 +96,7 @@ function LoadCongViec({ onSuccess }) {
           handleSendOTP();
         }}
         loading={isLoading}
-        icon={<IoReload style={{ position: 'relative', top: 2 }}></IoReload>}
+        icon={<IoReload style={{ position: 'relative'}}></IoReload>}
       >
         Load công việc
       </Button>

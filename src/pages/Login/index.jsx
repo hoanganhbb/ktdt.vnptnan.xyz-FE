@@ -101,6 +101,7 @@ export default function LoginPage() {
               style={{ marginBottom: 16 }}
               value={username}
               onChange={e => setUsername(e.target.value)}
+              className='border border-gray-200 px-3'
             />
             <Input.Password
               placeholder="Nhập mật khẩu"
@@ -108,6 +109,7 @@ export default function LoginPage() {
               value={password}
               onPressEnter={() => handleSubmit()}
               onChange={e => setPassword(e.target.value)}
+              className='border border-gray-200 px-3'
             />
             <Button
               type="primary"

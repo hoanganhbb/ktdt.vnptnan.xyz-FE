@@ -1,15 +1,12 @@
 // import logo from './logo.svg';
-import './App.css';
 import { Routes, Route } from 'react-router-dom';
 // import { Button } from 'antd';
 import LoginPage from './pages/Login';
 import ProtectedLayout from './components/ProtectLayout';
-import Examination from './pages/Examination';
 import NotFoundPage from './pages/NotFound';
 import MarkTest from './pages/MarkTest';
 import ExamDetail from './pages/MarkTest/ExamDetail';
 import InfomationProjects from './pages/InfomationProjects';
-import CongViecKTDT from './pages/CongViecKTDT';
 // import MuaSamCongPage from './pages/MuaSamCong';
 import FormDuAnCNTT from './pages/FormDuAnCNTT';
 import FormTarget from './pages/FormTarget';
@@ -19,9 +16,6 @@ import DuAnHuyen from './pages/DuAnCapHuyen/DuAnHuyen';
 import HomeLayout from './components/HomeLayout';
 import HomePage from './pages/Home';
 import ReportPage from './pages/Report';
-import BaoCaoDoanhThuCNTTPage from './pages/BaoCaoDoanhThuCNTT';
-import BaoCaoDoanhThuTongHop from './pages/BaoCaoDoanhThuCNTT/BaoCaoDoanhThuTongHop';
-import BaoCaoDoanhThuHoachToan from './pages/BaoCaoDoanhThuCNTT/BaoCaoDoanhThuHoachToan';
 import SettingsDoanhThu from './pages/SettingsDoanhThu';
 import MobilePageHome from './pages/MobilePage';
 import CheckinCalendarTime from './pages/MobilePage/CheckinCalendarTime';
@@ -48,15 +42,8 @@ function App() {
         <Route exact path="/duancntt/create" element={<FormCreateDuAn />} />
       </Route>
       <Route path="" element={<ProtectedLayout />}>
-        <Route path="/examination/:id" element={<Examination />} />
-      </Route>
-      <Route path="" element={<ProtectedLayout />}>
         <Route path="/congviec" element={<MarkTest />} />
         <Route path="/congviec/:id" element={<ExamDetail />} />
-      </Route>
-      <Route path="" element={<ProtectedLayout />}>
-        <Route path="/congviec-ktdt" element={<CongViecKTDT />} />
-        <Route path="/congviec-ktdt/:id" element={<CongViecKTDT />} />
       </Route>
       <Route path="" element={<ProtectedLayout />}>
         {/* ✅ MobilePageLayout là cha của tất cả route con mobile */}
@@ -65,12 +52,6 @@ function App() {
           <Route path="mobile/chamcong" element={<CheckinCalendarTime />} />
           <Route path="settings" element={<ProfileScreen />} />
         </Route>
-      </Route>
-      <Route path="" element={<ProtectedLayout />}>
-        <Route path="/baocao/cntt-dia-ban" element={<ExternalRedirect />} />
-        <Route path="/baocao/doanhthu" element={<BaoCaoDoanhThuCNTTPage />} />
-        <Route path="/baocao/doanhthutonghop" element={<BaoCaoDoanhThuTongHop />} />
-        <Route path="/baocao/doanhthuhachtoan" element={<BaoCaoDoanhThuHoachToan />} />
       </Route>
       <Route path="" element={<ProtectedLayout />}>
         <Route path="/report" element={<ReportPage />} />

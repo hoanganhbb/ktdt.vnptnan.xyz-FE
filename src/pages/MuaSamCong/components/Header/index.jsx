@@ -191,7 +191,8 @@ function Header() {
                     className="img"
                   />
                   <div className="header-content__title-left-header">
-                    <p className="header-content__title-left-header__bottom-content">VNPT Nghệ An</p>
+                    <p className="header-content__title-left-header__bottom-content">
+                    </p>
                     <p className="header-content__title-left-header__top-content">Hệ thống mạng đấu thầu quốc gia</p>
                   </div>
                 </div>

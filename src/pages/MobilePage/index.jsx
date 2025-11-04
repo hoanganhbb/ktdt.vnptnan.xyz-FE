@@ -1,8 +1,8 @@
 import React, { useState, useLayoutEffect } from 'react';
 // import { useNavigate } from 'react-router-dom';
 // import { MdHome, MdSettings, MdAccountCircle, MdInfo, MdCalendarMonth } from 'react-icons/md';
-import { Flex, Spin } from 'antd';
-import { IoChatboxEllipses, IoReloadOutline, IoSearchOutline, IoTime } from 'react-icons/io5';
+import { Drawer, Flex, Spin, Tag } from 'antd';
+import { IoChatboxEllipses, IoCheckmarkDone, IoReloadOutline, IoSearchOutline, IoTime, IoTrash } from 'react-icons/io5';
 import requestAPI from '../../utils/requestAPI';
 import { toast } from 'sonner';
 import moment from 'moment';
@@ -21,27 +21,33 @@ const checkIsDealine = data => {
   };
 };
 
-const RenderItemTask = ({ item, danhmuc }) => {
-  // const { deadline, quahan, isComplete } = checkIsDealine(item);
+const RenderItemTask = ({ item, danhmuc, setDataDetail }) => {
+  const { quahan, isComplete } = checkIsDealine(item);
   return (
     <div
       style={{
         padding: 12,
-        borderBottom: '1px solid #ddd',
-        background: '#fff',
+        border: '1px solid #f0f0f0',
+        background: quahan && !isComplete ? '#ffcdd290' : '#fff',
         borderRadius: 8,
         marginBottom: 8,
         position: 'relative'
       }}
+      onClick={() => {
+        setDataDetail ? setDataDetail(item) : null;
+      }}
     >
-      <div className="time-end-block">{item?.ngay_het_han ? dayjs(item.ngay_het_han).format('DD/MM/YYYY') : ''}</div>
       <Flex
         align="center"
         gap={4}
-        style={{ paddingBottom: 4, borderBottom: '1px solid #ddd', marginBottom: 4, color: ' #707070' }}
+        justify="space-between"
+        style={{ paddingBottom: 4, borderBottom: '1px solid #f0f0f0', color: ' #707070', marginBottom: 6 }}
       >
-        <IoTime size={14} style={{ position: 'relative' }} />
-        {item?.ngay_giao ? dayjs(item.ngay_giao).format('DD/MM/YYYY') : ''}
+        <Flex align="center" gap={4}>
+          <IoTime size={14} style={{ position: 'relative' }} />
+          {item?.ngay_giao ? dayjs(item.ngay_giao).format('DD/MM/YYYY') : ''}
+        </Flex>
+        <Tag color={isComplete ? 'green' : 'red'}>{isComplete ? 'Hoàn thành' : 'Chưa hoàn thành'}</Tag>
       </Flex>
       <Flex
         align="center"
@@ -58,6 +64,11 @@ const RenderItemTask = ({ item, danhmuc }) => {
       <Flex align="center" justify="space-between">
         <div>Chủ trì:</div>
         <div>{danhmuc?.don_vi_chu_tri.find(ele => ele.id === item.don_vi_chu_tri[0]).name}</div>
+      </Flex>
+      <div style={{ margin: '4px 0px', height: 1, width: '100%' }}></div>
+      <Flex align="center" justify="space-between">
+        <div>Ngày hết hạn:</div>
+        <div>{item?.ngay_het_han ? dayjs(item.ngay_het_han).format('DD/MM/YYYY') : ''}</div>
       </Flex>
     </div>
   );
@@ -84,7 +95,10 @@ function MobileCongViecPage() {
     pageSize: 50
   });
 
+  const [dataDetail, setDataDetail] = useState(null);
+
   const fetchData = async isLoading => {
+    setDataDetail(null)
     if (isLoading) setIsLoading(true);
     Promise.all([requestAPI.get(`api/profile/`)]).then(res => {
       setDanhMuc(res[0].data);
@@ -113,7 +127,7 @@ function MobileCongViecPage() {
       })
       .then(() => {
         toast.success('Hoàn thành công việc');
-        fetchData();
+        onSearch();
       })
       .catch(err => toast.error(JSON.stringify(err)));
   };
@@ -167,7 +181,7 @@ function MobileCongViecPage() {
     onSearch();
   }, [searchValue]);
 
-  console.log(setSearchValue, handleDelete, handleComplete, handleFilter, onSearch, fetchData, danhmuc, dataFilter);
+  console.log(setSearchValue, handleFilter, onSearch, fetchData, danhmuc, dataFilter);
 
   return (
     <HomeWrapper>
@@ -204,9 +218,46 @@ function MobileCongViecPage() {
       >
         <div style={{ padding: 16 }}>
           {dataFilter?.length > 0 &&
-            dataFilter.map((item, index) => <RenderItemTask item={item} key={index} danhmuc={danhmuc} />)}
+            dataFilter.map((item, index) => (
+              <RenderItemTask item={item} key={index} danhmuc={danhmuc} setDataDetail={setDataDetail} />
+            ))}
         </div>
       </div>
+      <Drawer
+        open={!!dataDetail}
+        width={'100%'}
+        size="large"
+        placement="bottom"
+        title="Thông tin chi tiết"
+        onClose={() => setDataDetail(null)}
+        destroyOnClose
+        style={{ padding: 0 }}
+      >
+        {dataDetail && <RenderItemTask item={dataDetail} danhmuc={danhmuc} />}
+        <div style={{ height: 8 }}></div>
+        <Flex align="center" justify="space-between" gap={16}>
+          <Flex
+            align="center"
+            justify="center"
+            vertical
+            style={{ padding: '16px 24px', borderRadius: 10, background: '#f0f0f0', width: '50%' }}
+            onClick={() => handleComplete(dataDetail.id)}
+          >
+            <IoCheckmarkDone size={20} style={{ marginBottom: 6 }} />
+            <div style={{ fontSize: 14}}>Hoàn thành</div>
+          </Flex>
+          <Flex
+            align="center"
+            justify="center"
+            vertical
+            style={{ padding: '16px 24px', borderRadius: 10, background: '#f0f0f0', width: '50%' }}
+            onClick={() => handleDelete(dataDetail.id)}
+          >
+            <IoTrash size={20} style={{ marginBottom: 6 }} />
+            <div style={{ fontSize: 14}}>Xóa</div>
+          </Flex>
+        </Flex>
+      </Drawer>
     </HomeWrapper>
   );
 }
