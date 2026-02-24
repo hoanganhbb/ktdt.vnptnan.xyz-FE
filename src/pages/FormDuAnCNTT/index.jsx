@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import MainLayout from '../../components/MainLayout';
 import { useNavigate, useParams } from 'react-router-dom';
 import requestAPI from '../../utils/requestAPI';
 import { Button, Col, DatePicker, Flex, Form, Input, Row, Select, Space, Spin } from 'antd';
@@ -8,7 +7,7 @@ import dayjs from 'dayjs';
 import { BsFileEarmarkPdfFill, BsArrowLeft } from 'react-icons/bs';
 import { IoIosSave } from 'react-icons/io';
 import { FaFileCirclePlus, FaTrashCan } from 'react-icons/fa6';
-import { BiDownload } from "react-icons/bi";
+import { BiDownload } from 'react-icons/bi';
 import UploadFile from './UploadFile';
 import { toast } from 'sonner';
 
@@ -67,7 +66,7 @@ function FormDuAnCNTT() {
   };
 
   return (
-    <MainLayout>
+    <>
       <Spin tip="Đang tải dữ liệu..." spinning={isLoading} fullscreen></Spin>
       <Form layout="vertical" form={form} name="control-hooks">
         {/* {JSON.stringify(data)} */}
@@ -186,15 +185,15 @@ function FormDuAnCNTT() {
                   getValueProps={text =>
                     text
                       ? {
-                        value: text
-                          .toString()
-                          .replaceAll(',', '')
-                          .split('')
-                          .reverse()
-                          .reduce((prev, next, index) => {
-                            return (index % 3 ? next : next + ',') + prev;
-                          })
-                      }
+                          value: text
+                            .toString()
+                            .replaceAll(',', '')
+                            .split('')
+                            .reverse()
+                            .reduce((prev, next, index) => {
+                              return (index % 3 ? next : next + ',') + prev;
+                            })
+                        }
                       : ''
                   }
                   getValueFromEvent={onChange => {
@@ -213,15 +212,15 @@ function FormDuAnCNTT() {
                   getValueProps={text =>
                     text
                       ? {
-                        value: text
-                          .toString()
-                          .replaceAll(',', '')
-                          .split('')
-                          .reverse()
-                          .reduce((prev, next, index) => {
-                            return (index % 3 ? next : next + ',') + prev;
-                          })
-                      }
+                          value: text
+                            .toString()
+                            .replaceAll(',', '')
+                            .split('')
+                            .reverse()
+                            .reduce((prev, next, index) => {
+                              return (index % 3 ? next : next + ',') + prev;
+                            })
+                        }
                       : ''
                   }
                   getValueFromEvent={onChange => {
@@ -356,7 +355,7 @@ function FormDuAnCNTT() {
                         {item.ten_tai_lieu ? item.ten_tai_lieu : 'File không có tên'}
                       </a>
                     </Flex>
-                    <Flex align='center' style={{ gap: 6, position: 'relative', top: 3 }}>
+                    <Flex align="center" style={{ gap: 6, position: 'relative', top: 3 }}>
                       <BiDownload
                         size={20}
                         color={colors.blue[800]}
@@ -386,7 +385,7 @@ function FormDuAnCNTT() {
           onClose={() => setIsOpenUpload(false)}
         ></UploadFile>
       )}
-    </MainLayout>
+    </>
   );
 }
 

@@ -1,22 +1,22 @@
 import { createContext, useContext, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLocalStorage } from './useLocalStorage';
+import useAuthStore from '../store/useAuthStore';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useLocalStorage('user', null);
-  const [, setAccessToken] = useLocalStorage('access_token', null);
+  const user = useAuthStore(state => state.user);
+  const loginStore = useAuthStore(state => state.login);
+  const logoutStore = useAuthStore(state => state.logout);
   const navigate = useNavigate();
 
   const login = async data => {
-    setUser(data);
+    loginStore(data);
     navigate('/', { replace: true });
   };
 
   const logout = () => {
-    setUser(null);
-    setAccessToken()
+    logoutStore();
     navigate('/login', { replace: true });
   };
 

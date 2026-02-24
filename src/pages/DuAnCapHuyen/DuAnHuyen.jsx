@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 // import PropTypes from 'prop-types'
 import requestAPI from '../../utils/requestAPI';
-import MainLayout from '../../components/MainLayout/index';
 import { toast } from 'sonner';
 import { Button, Col, Flex, Row, Spin, Tag, Typography } from 'antd';
 import { formatCash } from '../../utils/constant';
@@ -38,7 +37,7 @@ function DuAnHuyen() {
   }, []);
 
   return (
-    <MainLayout>
+    <>
       <Spin tip="Đang tải dữ liệu..." spinning={isLoading} fullscreen></Spin>
       <Flex
         align="center"
@@ -162,7 +161,7 @@ function DuAnHuyen() {
             ))}
         </Row>
       )}
-    </MainLayout>
+    </>
   );
 }
 

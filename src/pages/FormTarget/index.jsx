@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import MainLayout from '../../components/MainLayout';
 import { useParams, useNavigate } from 'react-router-dom';
 import requestAPI from '../../utils/requestAPI';
 import { Spin, Flex, Table, Form, Input, Button, Space, Row, Col, Select, DatePicker } from 'antd';
@@ -44,8 +43,8 @@ function FormTarget() {
     requestAPI
       .patch(`api/duancntt/nhiemvu/${body.id}`, body)
       .then(() => {
-        setSelectedItem()
-        fetchData()
+        setSelectedItem();
+        fetchData();
       })
       .finally(() =>
         setTimeout(() => {
@@ -56,7 +55,7 @@ function FormTarget() {
   };
 
   return (
-    <MainLayout>
+    <>
       <Spin tip="Đang tải dữ liệu..." spinning={isLoading} fullscreen></Spin>
       {data && selectedItem && (
         <div
@@ -214,7 +213,7 @@ function FormTarget() {
         </div>
       )}
       {/* {JSON.stringify(data?.nhiem_vu_du_an)} */}
-    </MainLayout>
+    </>
   );
 }
 

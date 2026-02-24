@@ -4,7 +4,7 @@ import { Modal, Input, Button, Flex, Spin } from 'antd';
 import { IoReload } from 'react-icons/io5';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
+import useAuthStore from '../../store/useAuthStore';
 
 const LIST_USERS = [
   {
@@ -25,7 +25,7 @@ function LoadCongViec({ onSuccess }) {
   const [isShowInputOTP, setIsShowInputOTP] = useState(false);
   const [OTPInfo, setOTPInfo] = useState(false);
   const [isShowModal, setIsShowModal] = useState(false);
-  const [user] = useLocalStorage('user');
+  const user = useAuthStore(state => state.user);
 
   const handleSendOTP = async () => {
     const body = LIST_USERS.find(ele => ele.username === user?.username);
@@ -73,7 +73,7 @@ function LoadCongViec({ onSuccess }) {
     axios
       .post('https://api-node.ktdt.vnptnan.xyz/login-eoffice', {
         token_eoffice: result.data.data.token,
-        username: user.username,
+        username: user.username
         // token_eoffice: '$2a$10$InZ2RNdJmuKfSgZTI0zlv.UXTMKGcoq1ND4E3lMpfV36tH3mnAHja'
       })
       .then(res => {
@@ -96,7 +96,7 @@ function LoadCongViec({ onSuccess }) {
           handleSendOTP();
         }}
         loading={isLoading}
-        icon={<IoReload style={{ position: 'relative'}}></IoReload>}
+        icon={<IoReload style={{ position: 'relative' }}></IoReload>}
       >
         Load công việc
       </Button>

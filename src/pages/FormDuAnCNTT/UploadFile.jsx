@@ -21,15 +21,15 @@ function getReadableFileSizeString(fileSizeInBytes) {
 function UploadFile({ data, refresh, onClose }) {
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState('');
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
 
   const onFileChange = e => {
     setFile(e.target.files[0]);
   };
 
   const handleUploadFile = () => {
-    if (!fileName) return toast.error('Vui lòng nhập tên tài liệu')
-    setIsLoading(true)
+    if (!fileName) return toast.error('Vui lòng nhập tên tài liệu');
+    setIsLoading(true);
     const formData = new FormData();
     formData.append('ten_tai_lieu', fileName);
     formData.append('du_an_cntt', data.id);
@@ -42,11 +42,11 @@ function UploadFile({ data, refresh, onClose }) {
         }
       })
       .then(() => {
-        refresh()
+        refresh();
       })
       .catch(e => toast.error(JSON.stringify(e)))
-      .finally(() => setIsLoading(false))
-  }
+      .finally(() => setIsLoading(false));
+  };
 
   return (
     <Modal open title="Cập nhật tài liệu" width={600} footer={null} onCancel={onClose}>
@@ -127,7 +127,7 @@ function UploadFile({ data, refresh, onClose }) {
           </Col>
         ))}
       </Row>
-    </Modal >
+    </Modal>
   );
 }
 

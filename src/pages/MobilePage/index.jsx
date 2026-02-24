@@ -98,7 +98,7 @@ function MobileCongViecPage() {
   const [dataDetail, setDataDetail] = useState(null);
 
   const fetchData = async isLoading => {
-    setDataDetail(null)
+    setDataDetail(null);
     if (isLoading) setIsLoading(true);
     Promise.all([requestAPI.get(`api/profile/`)]).then(res => {
       setDanhMuc(res[0].data);
@@ -244,7 +244,7 @@ function MobileCongViecPage() {
             onClick={() => handleComplete(dataDetail.id)}
           >
             <IoCheckmarkDone size={20} style={{ marginBottom: 6 }} />
-            <div style={{ fontSize: 14}}>Hoàn thành</div>
+            <div style={{ fontSize: 14 }}>Hoàn thành</div>
           </Flex>
           <Flex
             align="center"
@@ -254,7 +254,7 @@ function MobileCongViecPage() {
             onClick={() => handleDelete(dataDetail.id)}
           >
             <IoTrash size={20} style={{ marginBottom: 6 }} />
-            <div style={{ fontSize: 14}}>Xóa</div>
+            <div style={{ fontSize: 14 }}>Xóa</div>
           </Flex>
         </Flex>
       </Drawer>

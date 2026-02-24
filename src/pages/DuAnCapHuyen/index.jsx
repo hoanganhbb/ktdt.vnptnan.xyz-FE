@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 // import { FaDotCircle } from 'react-icons/fa';
 // import PropTypes from 'prop-types'
-import MainLayout from '../../components/MainLayout';
 import requestAPI from '../../utils/requestAPI';
 // import dayjs from 'dayjs';
 import { colors } from '../../utils/theme';
@@ -100,19 +99,19 @@ function DuAnCapHuyen() {
   }, [filterCondition]);
 
   return (
-    <MainLayout>
+    <>
       <StyledWrapper>
-        <Spin tip="Đang tải dữ liệu..." spinning={isLoading} fullscreen></Spin>
+        <Spin tips="Đang tải dữ liệu..." spinning={isLoading} fullscreen></Spin>
         {DANH_MUC.current && (
           <>
-            <div style={{ width: '100%', marginBottom: 6 }}>
+            <Flex wrap justify="space-between" style={{ width: '100%', marginBottom: 6 }}>
               <div style={{ margin: 0, textTransform: 'uppercase', fontWeight: 600, fontSize: 18, marginBottom: 5 }}>
-                Quản lý dự án công nghệ thông tin cấp huyện ({data?.length})
+                Dự án công nghệ thông tin cấp xã ({data?.length})
               </div>
               <div style={{ fontStyle: 'italic', fontSize: 12, marginBottom: 10 }}>
                 (Mặc định sắp xếp theo giá trị giảm dần)
               </div>
-            </div>
+            </Flex>
             <Row gutter={16} style={{}}>
               <Col xs={24} sm={8} md={8} lg={6} xl={3} className="gutter-row" style={{ marginBottom: 10 }}>
                 <div
@@ -389,7 +388,7 @@ function DuAnCapHuyen() {
                         align: 'center',
                         hidden: !!filterCondition.nhom_dich_vu,
                         render: (value, row) => {
-                          if (row.id === 88888) return <></>
+                          if (row.id === 88888) return <></>;
                           if (row.id === 99999) {
                             return (
                               <div style={{ fontWeight: 700 }}>
@@ -417,22 +416,31 @@ function DuAnCapHuyen() {
                         key: 'id',
                         align: 'center',
                         render: (value, row) => {
-                          if (row.id === 99999) return <></>
+                          if (row.id === 99999) return <></>;
                           if (row.id === 88888) {
-                            return <div style={{ fontWeight: 500 }}>{formatCash(
-                              data
-                                .filter(ele => ele.trang_thai_hop_dong === TRANG_THAI_HD_DA_KY &&
-                                  ele.cap_du_an === DU_AN_CAP_HUYEN_ID)
-                                .reduce((acc, currentValue) => acc + currentValue.gia_tri_hop_dong, 0)
-                            )}</div>
+                            return (
+                              <div style={{ fontWeight: 500 }}>
+                                {formatCash(
+                                  data
+                                    .filter(
+                                      ele =>
+                                        ele.trang_thai_hop_dong === TRANG_THAI_HD_DA_KY &&
+                                        ele.cap_du_an === DU_AN_CAP_HUYEN_ID
+                                    )
+                                    .reduce((acc, currentValue) => acc + currentValue.gia_tri_hop_dong, 0)
+                                )}
+                              </div>
+                            );
                           } else {
-                            return <div style={{ fontWeight: 500 }}>
-                              {formatCash(
-                                data
-                                  .filter(ele => ele.don_vi_ky_ket.includes(value))
-                                  .reduce((acc, currentValue) => acc + currentValue.gia_tri_hop_dong, 0)
-                              )}
-                            </div>
+                            return (
+                              <div style={{ fontWeight: 500 }}>
+                                {formatCash(
+                                  data
+                                    .filter(ele => ele.don_vi_ky_ket.includes(value))
+                                    .reduce((acc, currentValue) => acc + currentValue.gia_tri_hop_dong, 0)
+                                )}
+                              </div>
+                            );
                           }
                         }
                       },
@@ -705,7 +713,7 @@ function DuAnCapHuyen() {
           </>
         )}
       </StyledWrapper>
-    </MainLayout>
+    </>
   );
 }
 

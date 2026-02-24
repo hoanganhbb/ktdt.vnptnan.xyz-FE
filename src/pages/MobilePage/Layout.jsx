@@ -14,7 +14,6 @@ function MobilePageLayout() {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-
   return (
     <Flex
       vertical={true}

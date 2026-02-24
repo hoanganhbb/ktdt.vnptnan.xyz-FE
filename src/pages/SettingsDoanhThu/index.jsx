@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Button, Col, Flex, Row } from 'antd';
-import MainLayout from '../../components/MainLayout';
 // import PropTypes from 'prop-types'
 import { colors } from '../../utils/theme';
 import { FaDownload, FaLock, FaTrash, FaUnlock } from 'react-icons/fa6';
@@ -19,13 +18,13 @@ function SettingsDoanhThu() {
     setData(result.data);
   };
 
-  const handleLockFile = async (ele) => {
-    if (ele.is_locked) return
-    const formData = new FormData()
-    formData.append('thang_bao_cao', `${ele.thang}/${ele.nam}`)
+  const handleLockFile = async ele => {
+    if (ele.is_locked) return;
+    const formData = new FormData();
+    formData.append('thang_bao_cao', `${ele.thang}/${ele.nam}`);
     const result = await requestAPI.patch(`/api/duancntt/uploadfile`, formData);
-    if (result.status == 200) fetchData()
-  }
+    if (result.status == 200) fetchData();
+  };
 
   const RenderItemData = ({ ele }) => {
     const element = useMemo(() => data?.data?.find(item => ele === item.thang), [ele]);
@@ -50,13 +49,13 @@ function SettingsDoanhThu() {
             <Button
               size="small"
               icon={<FaTrash color={colors.red[600]} />}
-            // onClick={() => handleRemoveFile()}
+              // onClick={() => handleRemoveFile()}
             ></Button>
             <Button
               size="small"
               icon={element?.is_locked ? <FaLock color={colors.green[600]} /> : <FaUnlock color={colors.green[600]} />}
               onClick={() => {
-                handleLockFile(element)
+                handleLockFile(element);
               }}
             ></Button>
           </Flex>
@@ -66,22 +65,22 @@ function SettingsDoanhThu() {
   };
 
   const handleFileChange = e => {
-    const file = e.target.files[0]
-    const formData = new FormData()
-    formData.append('thang_bao_cao', '7/2024')
-    formData.append('file', file)
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append('thang_bao_cao', '7/2024');
+    formData.append('file', file);
     try {
       const result = requestAPI.post('/api/duancntt/uploadfile', formData, {
         headers: {
           'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'
         }
-      })
+      });
       if (result.status == 200) {
-        toast.success('Cập nhật file thành công')
-        fetchData()
+        toast.success('Cập nhật file thành công');
+        fetchData();
       }
     } catch (error) {
-      toast.error(JSON.stringify(error))
+      toast.error(JSON.stringify(error));
     }
   };
 
@@ -90,7 +89,7 @@ function SettingsDoanhThu() {
   }, []);
 
   return (
-    <MainLayout>
+    <>
       <Flex justify="space-between" align="center" style={{ marginBottom: 10 }}>
         <div
           style={{
@@ -130,7 +129,7 @@ function SettingsDoanhThu() {
           </Col>
         ))}
       </Row>
-    </MainLayout>
+    </>
   );
 }
 

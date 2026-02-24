@@ -2,8 +2,7 @@ import { Carousel } from 'antd';
 import React from 'react';
 
 export default function ImageViewer({ element }) {
-  const onChange = () => {
-  };
+  const onChange = () => {};
   return (
     <div>
       <Carousel afterChange={onChange}>

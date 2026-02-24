@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import MainLayout from '../components/MainLayout';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import requestAPI from '../utils/requestAPI';
 import { Button, Col, DatePicker, Flex, Form, Input, Row, Select, Space, Spin } from 'antd';
@@ -11,7 +10,7 @@ import { toast } from 'sonner';
 
 function FormCreateDuAn() {
   const [searchParams] = useSearchParams();
-  const cap_du_an = searchParams.get('cap_du_an') || ''
+  const cap_du_an = searchParams.get('cap_du_an') || '';
   const navigate = useNavigate();
   const DANH_MUC = useRef();
   const [form] = Form.useForm();
@@ -22,7 +21,7 @@ function FormCreateDuAn() {
     Promise.all([requestAPI.get(`api/profile/`)])
       .then(res => {
         DANH_MUC.current = res[0].data;
-        form.setFieldValue('cap_du_an', cap_du_an ? +cap_du_an : 9)
+        form.setFieldValue('cap_du_an', cap_du_an ? +cap_du_an : 9);
       })
       .finally(() =>
         setTimeout(() => {
@@ -48,12 +47,12 @@ function FormCreateDuAn() {
     }
     if (body?.don_vi_ky_ket?.length > 1) {
       formData.delete('don_vi_ky_ket');
-      body.don_vi_ky_ket.map(ele => formData.append('don_vi_ky_ket', ele))
+      body.don_vi_ky_ket.map(ele => formData.append('don_vi_ky_ket', ele));
     }
 
     if (body?.don_vi_phoi_hop?.length > 1) {
       formData.delete('don_vi_phoi_hop');
-      body.don_vi_phoi_hop.map(ele => formData.append('don_vi_phoi_hop', ele))
+      body.don_vi_phoi_hop.map(ele => formData.append('don_vi_phoi_hop', ele));
     }
 
     setIsLoading(true);
@@ -64,11 +63,11 @@ function FormCreateDuAn() {
         }
       })
       .then(() => {
-        toast.success('Tạo dự án thành công')
+        toast.success('Tạo dự án thành công');
         navigate(-1);
       })
       .catch(e => toast.error(JSON.stringify(e)))
-      .finally(() => setIsLoading(false))
+      .finally(() => setIsLoading(false));
   };
 
   const validateMessages = {
@@ -76,7 +75,7 @@ function FormCreateDuAn() {
   };
 
   return (
-    <MainLayout>
+    <>
       <Spin tip="Đang tải dữ liệu..." spinning={isLoading} fullscreen></Spin>
       <Form layout="vertical" form={form} name="control-hooks" validateMessages={validateMessages}>
         {DANH_MUC.current && (
@@ -191,14 +190,14 @@ function FormCreateDuAn() {
                   getValueProps={text =>
                     text
                       ? {
-                        value: text
-                          .replaceAll(',', '')
-                          .split('')
-                          .reverse()
-                          .reduce((prev, next, index) => {
-                            return (index % 3 ? next : next + ',') + prev;
-                          })
-                      }
+                          value: text
+                            .replaceAll(',', '')
+                            .split('')
+                            .reverse()
+                            .reduce((prev, next, index) => {
+                              return (index % 3 ? next : next + ',') + prev;
+                            })
+                        }
                       : ''
                   }
                   getValueFromEvent={onChange => {
@@ -325,7 +324,7 @@ function FormCreateDuAn() {
           </div>
         )}
       </Form>
-    </MainLayout>
+    </>
   );
 }
 

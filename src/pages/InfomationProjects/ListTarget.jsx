@@ -30,12 +30,9 @@ function ListTarget({ nhiem_vu_du_an, id }) {
       }}
     >
       {/* <div>{JSON.stringify(nhiem_vu_du_an)}</div> */}
-      <Flex align='center' justify='space-between' style={{ fontWeight: 600, color: colors.primary, fontSize: 18 }}>
+      <Flex align="center" justify="space-between" style={{ fontWeight: 600, color: colors.primary, fontSize: 18 }}>
         MỤC TIÊU DỰ ÁN ({nhiem_vu_du_an.length})
-        <Flex
-          style={{ cursor: 'pointer', padding: '0 10px' }}
-          onClick={() => navigate(`/duancntt/target/${id}`)}
-        >
+        <Flex style={{ cursor: 'pointer', padding: '0 10px' }} onClick={() => navigate(`/duancntt/target/${id}`)}>
           <BsFillPencilFill color="#2C5282" size={18} />
         </Flex>
       </Flex>

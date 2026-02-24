@@ -12,7 +12,6 @@ import { toast } from 'sonner';
 function TimKiemThueBaoOne({ du_an_cntt, onSuccess }) {
   const [data, setData] = useState([]);
 
-
   const [filter, setFilter] = useState({
     DONVI_ID: null,
     LOAITB_ID: null
@@ -30,22 +29,21 @@ function TimKiemThueBaoOne({ du_an_cntt, onSuccess }) {
     setData(results.data.Data);
   };
 
-  const handleAddThueBao = async (ma_thue_bao) => {
+  const handleAddThueBao = async ma_thue_bao => {
     try {
-      const result = await requestAPI.post(
-        `https://api.ktdt.vnptnan.xyz/api/duancntt/thuebaoonebss`, {
+      const result = await requestAPI.post(`https://api.ktdt.vnptnan.xyz/api/duancntt/thuebaoonebss`, {
         du_an_cntt,
         ma_thue_bao
-      })
+      });
       console.log(result.status);
       if (result.status == '201') {
-        console.log('ok')
-        onSuccess()
+        console.log('ok');
+        onSuccess();
       }
     } catch (error) {
-      toast.error(JSON.stringify(error))
+      toast.error(JSON.stringify(error));
     }
-  }
+  };
 
   return (
     <div style={{ background: colors.white, borderRadius: 8, padding: 10 }}>
@@ -89,14 +87,18 @@ function TimKiemThueBaoOne({ du_an_cntt, onSuccess }) {
             justify="space-between"
             style={{ borderBottom: '1px solid #ccc', fontWeight: 500, marginBottom: 6, borderRadius: 10, padding: 6 }}
           >
-
             <div>
               <div>Mã thuê bao: {ele?.MA_TB}</div>
               <div>Dịch vụ: {ele?.LOAIHINH_TB}</div>
               <div>Tên thuê bao: {ele?.TEN_TB}</div>
               <div>Gói cước: {ele?.GOI_CUOC}</div>
             </div>
-            <Flex align="center" justify="center" style={{ cursor: 'pointer' }} onClick={() => handleAddThueBao(ele.MA_TB)}>
+            <Flex
+              align="center"
+              justify="center"
+              style={{ cursor: 'pointer' }}
+              onClick={() => handleAddThueBao(ele.MA_TB)}
+            >
               <MdBookmarkAdd color={colors.blue[600]} size={22}></MdBookmarkAdd>
             </Flex>
           </Flex>

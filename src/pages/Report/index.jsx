@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import MainLayout from '../../components/MainLayout/index';
 import { Divider, Flex, Spin, Table } from 'antd';
 import requestAPI from '../../utils/requestAPI';
 import { toast } from 'sonner';
@@ -39,7 +38,7 @@ function ReportPage() {
   console.log(filterData, data);
 
   return (
-    <MainLayout>
+    <>
       <Spin tip="Đang tải dữ liệu..." spinning={isLoading} fullscreen></Spin>
       <div>
         <Divider
@@ -59,8 +58,7 @@ function ReportPage() {
               ele => ele.trang_thai_hop_dong === TRANG_THAI_HD_DA_KY && ele.cap_du_an === DU_AN_CAP_HUYEN_ID
             ).length
           }
-          )
-          | CẤP HUYỆN CHƯA KÝ (
+          ) | CẤP HUYỆN CHƯA KÝ (
           {
             filterData.filter(
               ele => ele.trang_thai_hop_dong === TRANG_THAI_HD_CHUA_KY && ele.cap_du_an === DU_AN_CAP_HUYEN_ID
@@ -147,7 +145,7 @@ function ReportPage() {
             .slice(0, 10)}
         ></Table>
       </div>
-    </MainLayout>
+    </>
   );
 }
 

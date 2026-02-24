@@ -3,13 +3,6 @@ import { colors } from '../../utils/theme';
 import { Layout } from 'antd';
 
 export const LayoutWrapper = styled(Layout)`
-  .user-infomation {
-    display: flex;
-    flex: 1;
-    justify-content: flex-end;
-    color: white;
-  }
-
   .cirle-box {
     display: flex;
     padding: 10px;
@@ -20,6 +13,18 @@ export const LayoutWrapper = styled(Layout)`
     align-items: center;
     justify-content: center;
     color: ${colors.primary};
+  }
+
+  .ant-menu-item-selected {
+    background: #e0f2fe;
+  }
+
+  .ant-menu-item .ant-menu-title-content {
+    font-weight: 500;
+  }
+
+  .ant-menu-item-selected .ant-menu-title-content {
+    font-weight: 700;
   }
 `;
 
@@ -34,7 +39,7 @@ export const MenuItemWrapper = styled.div`
   margin-bottom: 15px;
   cursor: pointer;
   display: flex;
-    align-items: center;
+  align-items: center;
 
   .top-dot {
     position: absolute;
@@ -86,6 +91,5 @@ export const MenuItemWrapper = styled.div`
     margin-right: 15px;
     display: inline-flex;
     justify-content: center;
-
   }
 `;

@@ -97,14 +97,14 @@ function FormDoanhThu({ onClose, data, onFinish }) {
                 value={
                   ele.gia_tri.toString()
                     ? ele.gia_tri
-                      .toString()
-                      .toString()
-                      .replaceAll(',', '')
-                      .split('')
-                      .reverse()
-                      .reduce((prev, next, index) => {
-                        return (index % 3 ? next : next + ',') + prev;
-                      })
+                        .toString()
+                        .toString()
+                        .replaceAll(',', '')
+                        .split('')
+                        .reverse()
+                        .reduce((prev, next, index) => {
+                          return (index % 3 ? next : next + ',') + prev;
+                        })
                     : ''
                 }
                 onChange={e => {
@@ -118,15 +118,20 @@ function FormDoanhThu({ onClose, data, onFinish }) {
                   width: 194
                 }}
               ></Input>
-              <TrashFill color={colors.red[600]} size={16} style={{ marginTop: 7, cursor: 'pointer' }} onClick={() => {
-                if (!ele.id) {
-                  setDataDoanhThu(dataDoanhThu.filter((item, index) => index !== idx))
-                } else {
-                  RequestAPI.delete(`api/duancntt/doanhthudukien/${ele.id}`).then(() => {
-                    setDataDoanhThu(dataDoanhThu.filter((element) => element.id !== ele.id))
-                  })
-                }
-              }}></TrashFill>
+              <TrashFill
+                color={colors.red[600]}
+                size={16}
+                style={{ marginTop: 7, cursor: 'pointer' }}
+                onClick={() => {
+                  if (!ele.id) {
+                    setDataDoanhThu(dataDoanhThu.filter((item, index) => index !== idx));
+                  } else {
+                    RequestAPI.delete(`api/duancntt/doanhthudukien/${ele.id}`).then(() => {
+                      setDataDoanhThu(dataDoanhThu.filter(element => element.id !== ele.id));
+                    });
+                  }
+                }}
+              ></TrashFill>
             </Flex>
           ))}
           <Flex

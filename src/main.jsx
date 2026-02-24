@@ -1,27 +1,27 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import './index.css'
-import { ConfigProvider } from 'antd'
-import App from './App'
-import { BrowserRouter } from 'react-router-dom'
-import { AuthProvider } from './hooks/useAuth'
-import { Toaster } from 'sonner'
-import { APP_BUILD_VERSION } from './version'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import { ConfigProvider } from 'antd';
+import App from './App';
+import { BrowserRouter } from 'react-router-dom';
+import { AuthProvider } from './hooks/useAuth';
+import { Toaster } from 'sonner';
+import { APP_BUILD_VERSION } from './version';
+import useAuthStore from './store/useAuthStore';
 
 if (import.meta.env.PROD) {
-  const savedVersion = localStorage.getItem('app_build_version')
+  const savedVersion = useAuthStore.getState().appBuildVersion;
 
   if (savedVersion && savedVersion !== APP_BUILD_VERSION) {
-    console.log('[PWA] New build detected. Clearing cache...')
+    console.log('[PWA] New build detected. Clearing cache...');
     if ('caches' in window) {
-      caches.keys().then(names => names.forEach(name => caches.delete(name)))
+      caches.keys().then(names => names.forEach(name => caches.delete(name)));
     }
-    localStorage.clear()
-    sessionStorage.clear()
-    localStorage.setItem('app_build_version', APP_BUILD_VERSION)
-    window.location.reload(true)
+    useAuthStore.getState().clearAll();
+    useAuthStore.getState().setAppBuildVersion(APP_BUILD_VERSION);
+    window.location.reload(true);
   } else if (!savedVersion) {
-    localStorage.setItem('app_build_version', APP_BUILD_VERSION)
+    useAuthStore.getState().setAppBuildVersion(APP_BUILD_VERSION);
   }
 }
 
@@ -37,9 +37,13 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           sizeUnit: 3,
           wireframe: true,
           controlOutlineWidth: 0,
-          rowHoverBg: '#B3E5FC',
-          fontFamily: 'Nunito Sans',
+          fontFamily: 'Nunito Sans'
         },
+        components: {
+          Table: {
+            rowHoverBg: '#B3E5FC'
+          }
+        }
       }}
     >
       <BrowserRouter>
@@ -49,5 +53,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         </AuthProvider>
       </BrowserRouter>
     </ConfigProvider>
-  </React.StrictMode>,
-)
+  </React.StrictMode>
+);

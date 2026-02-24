@@ -1,179 +1,108 @@
-import React, { useEffect, useState } from 'react';
 import { colors } from '../../utils/theme';
-import { Layout, Dropdown, Button, Spin, Flex } from 'antd';
+import { Layout, Spin, Menu } from 'antd';
 const { Header, Content, Sider } = Layout;
-import MenuItem from './MenuItem';
-import { ListTask, PencilSquare, PersonFill } from 'react-bootstrap-icons';
+import { Outlet } from 'react-router-dom';
 import { LayoutWrapper } from './styled';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
-import { useNavigate } from 'react-router-dom';
 import { isMobile } from 'react-device-detect';
-import { Menu } from 'react-feather';
-import { IoFileTrayStacked } from 'react-icons/io5';
-// import { FaChartLine } from 'react-icons/fa6';
-import requestAPI from '../../utils/requestAPI';
+import { MenuOutlined } from '@ant-design/icons';
+import useMainLayout from './useMainLayout';
+import UserDropdown from './UserDropdown';
+import { IoNotificationsSharp, IoExpand } from 'react-icons/io5';
 
-// if (isMobile) alert('Vui lòng xoay ngàng điện thoại để sử dụng')
+const VNPT_SIDEBAR_LOGO =
+  'https://iocrealty.com/wp-content/uploads/images/phan-tich-cac-yeu-to-thiet-ke-trong-logo-vnpt-0.png';
 
-export default function MainLayout({ children }) {
-  const [user] = useLocalStorage('user');
-  const navigate = useNavigate();
-  const [isOpenSideBar, setIsOpenSideBar] = useState(isMobile ? false : true);
-  const [roleGroup, setRoleGroup] = useState([]);
-  const [isLoading, setIsLoading] = useState([]);
-  const [PROFILES, SET_PROFILES] = useState();
-
-  useEffect(() => {
-    setIsLoading(true);
-    Promise.all([requestAPI.get(`api/profile/`)])
-      .then(res => {
-        const rolegroup = res[0].data?.rolegroup || [];
-        setRoleGroup(rolegroup);
-        SET_PROFILES(res[0].data);
-        // if (rolegroup.includes('chuyen_vien_ktdt')) return navigate('/congviec')
-      })
-      .finally(() =>
-        setTimeout(() => {
-          setIsLoading(false);
-        }, 300)
-      );
-  }, []);
+export default function MainLayout() {
+  const {
+    user,
+    profiles,
+    isLoading,
+    isOpenSideBar,
+    menuItems,
+    selectedKeys,
+    toggleSideBar,
+    handleLogout,
+    handleMenuClick,
+    handleOpenFullScreen
+  } = useMainLayout();
 
   return (
     <LayoutWrapper>
-      <Header
+      <Spin spinning={isLoading} fullscreen />
+
+      <Sider
+        width={280}
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          background: colors.primary,
-          padding: '0 20px'
+          background: colors.white,
+          minHeight: '100%',
+          overflow: 'auto',
+          borderRight: '1px solid #f0f0f0'
         }}
+        className="shadown-sm"
       >
-        <div
-          className="demo-logo"
-          style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginRight: 20 }}
-        >
-          <img src="https://vnpt.com.vn/design/images/logo-mb.png" alt="" width="140px" />
+        <div className="flex justify-center items-center">
+          <img src={VNPT_SIDEBAR_LOGO} alt="" width="140px" />
         </div>
-        {isMobile && <Menu size={22} color="white" onClick={() => setIsOpenSideBar(!isOpenSideBar)}></Menu>}
-        <div className="user-infomation">
-          <Flex vertical justify="center" style={{ marginRight: 10 }}>
-            <div style={{ color: 'white', fontSize: 16, fontWeight: 600, marginBottom: 3, lineHeight: 1 }}>
-              {user?.name}
+        {user && profiles && isOpenSideBar && (
+          <Menu
+            mode="inline"
+            selectedKeys={selectedKeys}
+            items={menuItems}
+            onClick={handleMenuClick}
+            style={{
+              background: 'transparent',
+              borderInlineEnd: 'none'
+            }}
+          />
+        )}
+      </Sider>
+      <Layout>
+        <Header
+          style={{
+            display: 'flex',
+            background: colors.primary,
+            padding: '10px 20px',
+            height: 60,
+            justifyContent: 'space-between'
+          }}
+        >
+          <div
+            className="demo-logo text-center"
+            style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginRight: 20 }}
+          ></div>
+          {isMobile && <MenuOutlined style={{ fontSize: 22, color: 'white' }} onClick={toggleSideBar} />}
+          <div className="flex align-center gap-2">
+            <div
+              className={[
+                'hidden md:flex items-center p-2 justify-center',
+                ' hover:bg-white/20 rounded-full cursor-pointer aspect-square',
+                'transition-full duration-200'
+              ].join(' ')}
+              onClick={handleOpenFullScreen}
+            >
+              <IoExpand size={22} style={{ color: 'white' }} />
             </div>
             <div
-              style={{
-                color: colors.whiteAlpha[500],
-                fontSize: 14,
-                fontWeight: 400,
-                lineHeight: 1,
-                textAlign: 'right'
-              }}
+              className={[
+                'hidden md:flex items-center p-2 justify-center',
+                ' hover:bg-white/20 rounded-full cursor-pointer aspect-square',
+                'transition-full duration-200'
+              ].join(' ')}
             >
-              {user?.username}
+              <IoNotificationsSharp size={22} style={{ color: 'white' }} />
             </div>
-          </Flex>
-          <Dropdown
-            dropdownRender={() => (
-              <div
-                style={{
-                  padding: 10,
-                  minWidth: 200,
-                  background: 'white',
-                  borderRadius: 6,
-                  boxShadow: '0px 3px 5px 5px rgba(100, 100, 100, 0.1)',
-                  textAlign: 'right'
-                }}
-              >
-                <Button
-                  type="primary"
-                  block
-                  style={{ width: '100%' }}
-                  onClick={() => {
-                    navigate('/');
-                    localStorage.clear();
-                  }}
-                >
-                  Đăng xuất!
-                </Button>
-              </div>
-            )}
-            placement="bottomRight"
-          >
-            <div className="cirle-box">
-              <PersonFill size={26}></PersonFill>
-            </div>
-          </Dropdown>
-        </div>
-      </Header>
-      <Layout>
-        <Spin spinning={isLoading} fullscreen></Spin>
-        {user && PROFILES && (
-          <Sider
-            width={!isOpenSideBar ? 0 : 280}
-            style={{
-              background: colors.primary,
-              paddingLeft: 10,
-              paddingTop: 20,
-              minHeight: '100%'
-            }}
-          >
-            {/* {(roleGroup?.includes('adminstrator') || roleGroup?.includes('chuyen_vien_ktdt')) && (
-              <MenuItem title="Công việc KTĐT" icon={<ListTask size={24}></ListTask>} path="congviec-ktdt"></MenuItem>
-            )} */}
-            {roleGroup?.includes('adminstrator') && (
-              <MenuItem title="Quản lý công việc" icon={<ListTask size={24}></ListTask>} path="congviec"></MenuItem>
-            )}
-            {/* {(roleGroup?.includes('adminstrator') || roleGroup?.includes('trungtamvienthong')) && (
-              <MenuItem
-                title="Báo cáo CNTT địa bàn"
-                icon={<FaChartLine size={22}></FaChartLine>}
-                path="baocao/cntt-dia-ban"
-              ></MenuItem>
-            )} */}
-            {PROFILES?.permission?.includes('du_an_cap_tinh') && (
-              <MenuItem
-                title="Dự án CNTT cấp tỉnh"
-                icon={<PencilSquare size={22}></PencilSquare>}
-                path="duancntt"
-              ></MenuItem>
-            )}
-            {PROFILES?.permission?.includes('du_an_cap_huyen') && (
-              <MenuItem
-                title="Dự án CNTT huyện"
-                icon={<IoFileTrayStacked size={22}></IoFileTrayStacked>}
-                path="duancaphuyen"
-              ></MenuItem>
-            )}
-            {/* {roleGroup?.includes('adminstrator') &&
-              ['phanducanh.nan', 'nttung.nan', 'tulc.nan'].includes(user.username) && (
-                <MenuItem
-                  title="Báo cáo dự án hết hạn"
-                  icon={<FaChartLine size={22}></FaChartLine>}
-                  path="report"
-                ></MenuItem>
-              )} */}
-            {/* {roleGroup?.includes('adminstrator') &&
-              ['phanducanh.nan', 'nttung.nan', 'tulc.nan', 'tonnhat.vtna'].includes(user.username) && (
-                <MenuItem
-                  title="Báo cáo doanh thu CNTT"
-                  icon={<FaChartLine size={22}></FaChartLine>}
-                  path="baocao/doanhthu"
-                ></MenuItem>
-              )} */}
-          </Sider>
-        )}
-        <Layout>
-          <Content
-            style={{
-              padding: 24,
-              margin: 0,
-              minHeight: 'calc(100vh - 88px)'
-            }}
-          >
-            {children}
-          </Content>
-        </Layout>
+            <UserDropdown user={user} profiles={profiles} onLogout={handleLogout} />
+          </div>
+        </Header>
+        <Content
+          style={{
+            padding: 24,
+            margin: 0,
+            minHeight: 'calc(100vh - 60px)'
+          }}
+        >
+          <Outlet />
+        </Content>
       </Layout>
     </LayoutWrapper>
   );

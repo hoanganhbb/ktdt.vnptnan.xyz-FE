@@ -13,10 +13,15 @@
   },
   "plugins": ["react", "react-hooks", "prettier"],
   "rules": {
+    "prettier/prettier": ["error", {
+      "endOfLine": "auto"
+    }],
     "max-len": ["warn", { "code": 120 }],
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",
-    "import/no-named-as-default-member": 0
+    "import/no-named-as-default-member": 0,
+    "import/no-named-as-default": 0,
+    "react-hooks/exhaustive-deps": "off"
     //add customize rules here as per your project's needs
   }
 }  
