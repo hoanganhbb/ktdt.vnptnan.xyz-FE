@@ -1,8 +1,9 @@
 import axios from 'axios';
 import useAuthStore from '../store/useAuthStore';
 
+// 🔗 Sử dụng environment variable cho baseURL
 const client = axios.create({
-  baseURL: 'https://api.ktdt.vnptnan.xyz/',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://api.ktdt.vnptnan.xyz/',
   headers: {
     'Content-Type': 'application/json'
   }
@@ -31,7 +32,6 @@ client.interceptors.response.use(
           return Promise.reject(response.data);
         case 401:
           useAuthStore.getState().clearAll();
-          window.location.href = '/login';
           return response;
         default:
           return originalRequest;

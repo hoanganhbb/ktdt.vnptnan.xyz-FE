@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import requestAPI from '../../utils/requestAPI';
-import { Button, Drawer, Popconfirm, Radio, Select, Spin, Table, Tag, Typography, Space, Flex } from 'antd';
-// import { useAuth } from '../../hooks/useAuth';
+import { Button, Drawer, Popconfirm, Select, Spin, Table, Tag, Typography, Space, Flex } from 'antd';
 import FormCongViec from './FormCongViec';
-import { TrashFill, Check2Square, Download, FileEarmarkPlus } from 'react-bootstrap-icons';
+import { TrashFill, Check2Square } from 'react-bootstrap-icons';
 import { HomeWrapper } from './styled';
 import { toast } from 'sonner';
 import moment from 'moment';
 import queryString from 'query-string';
 import LoadCongViec from './LoadCongViec';
 import { useAuth } from '../../hooks/useAuth';
-import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import { IoAdd, IoCloudDownloadOutline } from 'react-icons/io5';
+import { LucideFilter } from 'lucide-react';
+import { colors } from '../../utils/theme';
 
 const today = dayjs();
 dayjs.extend(isSameOrAfter);
@@ -139,310 +140,308 @@ function CongViecLanhDao() {
 
   return (
     <>
-      <Spin spinning={isLoadingInit} tip="Đang tải dữ liệu...">
+      <Spin spinning={isLoadingInit} tips="Đang tải dữ liệu...">
         <HomeWrapper>
-          {danhmuc && (
-            <div className="bg-white border border-gray-200 rounded-lg p-4 mb-3 shadow-2xs">
-              <Flex wrap gap={16} algin="center">
-                <Flex vertical flex={1} style={{ maxWidth: '40%' }}>
-                  <div className="mb-2">
-                    <Typography.Text>Đơn vị thực hiện</Typography.Text>
-                  </div>
-                  <Select
-                    placeholder="Chọn đơn vị thực hiện"
-                    options={danhmuc.don_vi_chu_tri}
-                    fieldNames={{ label: 'name', value: 'id' }}
-                    style={{ width: '100%' }}
-                    mode="multiple"
-                    value={searchValue.don_vi_chu_tri}
-                    onChange={value =>
-                      setSearchValue({
-                        ...searchValue,
-                        don_vi_chu_tri: value
-                      })
-                    }
-                    allowClear
-                  />
-                </Flex>
-                <Flex vertical>
-                  <div className="mb-2">
-                    <Typography.Text>Trạng thái công việc</Typography.Text>
-                  </div>
-                  <Space>
-                    {[
-                      {
-                        name: 'Tất cả',
-                        id: 1,
-                        props: {
-                          color: '#1E88E5'
-                        }
-                      },
-                      {
-                        name: 'Chưa hoàn thành',
-                        id: 2,
-                        props: {
-                          icon: <CloseCircleOutlined />,
-                          color: '#EF5350'
-                        }
-                      },
-                      {
-                        name: 'Hoàn thành',
-                        id: 3,
-                        props: {
-                          icon: <CheckCircleOutlined />,
-                          color: '#4CAF50'
-                        }
-                      }
-                    ].map(ele => (
-                      <Button
-                        key={ele.id}
-                        {...ele.props}
-                        style={{
-                          background: searchValue.status === ele.id ? ele?.props.color : 'white',
-                          color: searchValue.status === ele.id ? 'white' : '#444',
-                          borderColor: searchValue.status === ele.id ? ele?.props.color : '#eee'
-                        }}
-                        disable={searchValue.status !== ele.id}
-                        onClick={checked => {
-                          if (checked) {
-                            setSearchValue({
-                              ...searchValue,
-                              status: ele.id
-                            });
-                          } else {
-                            setSearchValue({
-                              ...searchValue,
-                              status: 1
-                            });
-                          }
-                        }}
-                      >
-                        {ele.name}
-                      </Button>
-                    ))}
-                  </Space>
-                </Flex>
-                <Flex vertical>
-                  <div className="mb-2">
-                    <Typography.Text>Thời hạn công việc</Typography.Text>
-                  </div>
-                  <Radio.Group
-                    onChange={e => {
-                      setSearchValue({
-                        ...searchValue,
-                        expired: e.target.value
-                      });
-                    }}
-                    value={searchValue.expired}
-                  >
-                    <Radio value={1}>Tất cả</Radio>
-                    <Radio value={2}>Còn hạn</Radio>
-                    <Radio value={3}>Quá hạn</Radio>
-                  </Radio.Group>
-                </Flex>
-              </Flex>
-            </div>
-          )}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              marginBottom: 10
-            }}
-          >
+          <Flex wrap align="center" justify="space-between" gap={16} className="mb-4!">
             <div>
-              <Typography.Title level={5} style={{ margin: 0 }}>
-                Tổng số việc: {pagination.totalCount}
+              <Typography.Title level={4} style={{ margin: 0, color: colors.primary, fontWeight: 600 }}>
+                Danh sách công việc eOffice
               </Typography.Title>
-              <div className="text-sm italic text-gray-500">Công việc sắp xếp theo thứ tự ngày giao gần nhất</div>
+              <div className="text-sm italic text-gray-500">
+                Công việc sắp xếp theo thứ tự ngày giao gần nhất, số lượng {pagination.totalCount} việc
+              </div>
             </div>
             <Space>
-              <Button type="default" onClick={() => setModalCongViec(true)} icon={<FileEarmarkPlus />}>
-                Thêm công việc mới
-              </Button>
               <Button
                 type="default"
                 onClick={handleExportExcel}
                 loading={isLoadingExcel}
-                icon={<Download style={{ position: 'relative' }}></Download>}
+                icon={<IoCloudDownloadOutline style={{ position: 'relative' }} />}
               >
                 Xuất Excel
               </Button>
+              <Button type="primary" onClick={() => setModalCongViec(true)} icon={<IoAdd />}>
+                Thêm mới
+              </Button>
               <LoadCongViec onSuccess={() => onSearch()} />
             </Space>
-          </div>
-          <Table
-            dataSource={dataFilter}
-            size="small"
-            rowKey="id"
-            isLoading={isLoading}
-            bordered
-            loading={isLoading}
-            className="border border-gray-200 rounded-2xl bg-white"
-            rowClassName={record =>
-              checkIsDealine(record).quahan && !checkIsDealine(record).isComplete ? 'task-expired' : 'task-normal'
-            }
-            pagination={{
-              pageSize: pagination?.pageSize,
-              total: pagination?.total,
-              current: searchValue.p,
-              onChange: page => {
-                setSearchValue({
-                  ...searchValue,
-                  p: page
-                });
-              },
-              size: 'default',
-              style: {
-                paddingRight: 16
+          </Flex>
+          <div className="bg-white border border-gray-200 rounded-lg shadow-2xs">
+            {danhmuc && (
+              <div className="p-4">
+                <Flex wrap gap={16} algin="center">
+                  <Flex align="center">
+                    <LucideFilter size={22} />
+                  </Flex>
+                  <Flex vertical flex={1} style={{ maxWidth: 300 }}>
+                    <Select
+                      placeholder="Chọn đơn vị thực hiện"
+                      options={[
+                        {
+                          name: <span className="text-gray-400">Đơn vị chủ trì thực hiện</span>,
+                          title: 'Đơn vị chủ trì',
+                          options: danhmuc.don_vi_chu_tri
+                        }
+                      ]}
+                      fieldNames={{ label: 'name', value: 'id' }}
+                      style={{ width: '100%' }}
+                      mode="multiple"
+                      value={searchValue.don_vi_chu_tri}
+                      onChange={value =>
+                        setSearchValue({
+                          ...searchValue,
+                          don_vi_chu_tri: value
+                        })
+                      }
+                      allowClear
+                    />
+                  </Flex>
+                  <Flex vertical>
+                    <Select
+                      placeholder="Chọn trạng thái"
+                      value={searchValue.status}
+                      onChange={value => {
+                        setSearchValue({
+                          ...searchValue,
+                          status: value
+                        });
+                      }}
+                      style={{ width: 200 }}
+                      options={[
+                        {
+                          label: <span className="text-gray-400">Trạng thái</span>,
+                          title: 'Trạng thái',
+                          options: [
+                            {
+                              label: 'Tất cả',
+                              value: 1
+                            },
+                            {
+                              label: 'Chưa hoàn thành',
+                              value: 2
+                            },
+                            {
+                              label: 'Hoàn thành',
+                              value: 3
+                            }
+                          ]
+                        }
+                      ]}
+                    />
+                  </Flex>
+                  <Flex vertical>
+                    <Select
+                      placeholder="Chọn hạn"
+                      value={searchValue.expired}
+                      onChange={value => {
+                        setSearchValue({
+                          ...searchValue,
+                          expired: value
+                        });
+                      }}
+                      style={{ width: 150 }}
+                      options={[
+                        {
+                          label: <span className="text-gray-400">Thời hạn</span>,
+                          title: 'Thời hạn',
+                          options: [
+                            {
+                              label: 'Tất cả',
+                              value: 1
+                            },
+                            {
+                              label: 'Còn hạn',
+                              value: 2
+                            },
+                            {
+                              label: 'Quá hạn',
+                              value: 3
+                            }
+                          ]
+                        }
+                      ]}
+                    />
+                  </Flex>
+                </Flex>
+              </div>
+            )}
+            <Table
+              dataSource={dataFilter}
+              size="small"
+              rowKey="id"
+              isLoading={isLoading}
+              bordered
+              loading={isLoading}
+              className="rounded-0"
+              rowClassName={record =>
+                checkIsDealine(record).quahan && !checkIsDealine(record).isComplete ? 'task-expired' : 'task-normal'
               }
-            }}
-            columns={[
-              {
-                title: 'STT',
-                dataIndex: 'id',
-                key: 'id',
-                align: 'center',
-                render: (value, row, index) => (
-                  <>
-                    <div>{index + 1}</div>
-                    <div style={{ color: '#EEEEEE' }}>{value}</div>
-                  </>
-                )
-              },
-              {
-                title: 'Nội dung',
-                dataIndex: 'noi_dung',
-                key: 'noi_dung',
-                width: '45%',
-                render: (value, row) => (
-                  <>
-                    <div>
-                      <Typography.Text strong>
-                        Số eOffice: {row.so_eoffice} | {value}
-                      </Typography.Text>
-                    </div>
-                    <div>
-                      <Typography.Text>
-                        {user.username === 'phanducanh.nan' && row.lanh_dao_vtt} {'=>'} {row.noi_dung_chi_dao}{' '}
-                      </Typography.Text>
-                    </div>
-                  </>
-                )
-              },
-
-              {
-                title: 'Đơn vị thực hiện',
-                dataIndex: 'don_vi_chu_tri',
-                key: 'don_vi_chu_tri',
-                width: '25%',
-                render: (value, row) => (
-                  <>
-                    <div>
-                      <Typography.Text strong>
-                        Chủ trì:{' '}
-                        {row.don_vi_chu_tri
-                          .map(item => {
-                            return danhmuc?.don_vi_chu_tri.find(ele => ele.id === item).name;
-                          })
-                          .join(', ')}
-                      </Typography.Text>
-                    </div>
-                    <div>
-                      <div className="line-clamp-3">
-                        p/h:{' '}
-                        {row.don_vi_phoi_hop
-                          .map(item => {
-                            return danhmuc?.don_vi_phoi_hop.find(ele => ele.id === item).name;
-                          })
-                          .join(', ')}
-                      </div>
-                    </div>
-                  </>
-                )
-              },
-              {
-                title: 'Ngày hết hạn',
-                dataIndex: 'ngay_het_han',
-                key: 'ngay_het_han',
-                width: 220,
-                render: (value, row) => {
-                  return (
-                    <>
-                      <Typography.Paragraph
-                        style={{
-                          fontWeight: row.status ? '400' : '600',
-                          marginBottom: 0,
-                          color: row.status ? '#222' : checkIsDealine(row).quahan ? 'red' : 'green'
-                        }}
-                      >
-                        {moment(value).format('DD/MM/YYYY')}
-                      </Typography.Paragraph>
-
-                      {!checkIsDealine(row).quahan && !row.status && (
-                        <div>
-                          <Typography.Text
-                            italic
-                            style={{
-                              color: !checkIsDealine(row).quahan ? 'green' : 'red'
-                            }}
-                          >
-                            Còn hạn: {checkIsDealine(row).deadline} ngày
-                          </Typography.Text>
-                        </div>
-                      )}
-                      {checkIsDealine(row).quahan && !row.status && (
-                        <Tag color="red" style={{ fontWeight: '600' }}>
-                          Quá hạn
-                        </Tag>
-                      )}
-                    </>
-                  );
+              pagination={{
+                pageSize: pagination?.pageSize,
+                total: pagination?.total,
+                current: searchValue.p,
+                onChange: page => {
+                  setSearchValue({
+                    ...searchValue,
+                    p: page
+                  });
+                },
+                size: 'default',
+                style: {
+                  paddingRight: 16
                 }
-              },
-              {
-                title: 'Ngày giao',
-                dataIndex: 'ngay_giao',
-                key: 'ngay_giao',
-                render: value => <>{value ? moment(value).format('DD/MM/YYYY') : ''}</>
-              },
-              {
-                title: 'Trạng thái',
-                dataIndex: 'status',
-                key: 'status',
-                width: 180,
-                render: (value, row) => (
-                  <Space size="small" wrap separator="|">
-                    <Tag color={value ? 'green' : 'red'} style={{ fontWeight: 600 }}>
-                      {value ? 'OK' : 'NO'}
-                    </Tag>
-                    <Popconfirm
-                      className="popover-wrapper"
-                      title="Xóa công việc"
-                      description="Bạn có chắc chắn muốn xóa công việc này?"
-                      onConfirm={() => handleDelete(row.id)}
-                      okText="Đồng ý"
-                      cancelText="Hủy"
-                      placement="left"
-                      icon={<TrashFill size={26} style={{ margin: '0 10px 0 0' }} color="#EF5350"></TrashFill>}
-                    >
-                      <TrashFill size={18} style={{ margin: '0 6px' }} color="#EF5350"></TrashFill>
-                    </Popconfirm>
-                    {!value && (
+              }}
+              columns={[
+                {
+                  title: 'STT',
+                  dataIndex: 'id',
+                  key: 'id',
+                  align: 'center',
+                  render: (value, row, index) => (
+                    <>
+                      <div>{index + 1}</div>
+                      <div style={{ color: '#EEEEEE' }}>{value}</div>
+                    </>
+                  )
+                },
+                {
+                  title: 'Nội dung',
+                  dataIndex: 'noi_dung',
+                  key: 'noi_dung',
+                  width: '45%',
+                  render: (value, row) => (
+                    <>
+                      <div>
+                        <Typography.Text strong>
+                          Số eOffice: {row.so_eoffice} | {value}
+                        </Typography.Text>
+                      </div>
+                      <div>
+                        <Typography.Text>
+                          {user.username === 'phanducanh.nan' && row.lanh_dao_vtt} {'=>'} {row.noi_dung_chi_dao}{' '}
+                        </Typography.Text>
+                      </div>
+                    </>
+                  )
+                },
+
+                {
+                  title: 'Đơn vị thực hiện',
+                  dataIndex: 'don_vi_chu_tri',
+                  key: 'don_vi_chu_tri',
+                  width: '25%',
+                  render: (value, row) => (
+                    <>
+                      <div>
+                        <Typography.Text strong>
+                          Chủ trì:{' '}
+                          {row.don_vi_chu_tri
+                            .map(item => {
+                              return danhmuc?.don_vi_chu_tri.find(ele => ele.id === item).name;
+                            })
+                            .join(', ')}
+                        </Typography.Text>
+                      </div>
+                      <div>
+                        <div className="line-clamp-3">
+                          p/h:{' '}
+                          {row.don_vi_phoi_hop
+                            .map(item => {
+                              return danhmuc?.don_vi_phoi_hop.find(ele => ele.id === item).name;
+                            })
+                            .join(', ')}
+                        </div>
+                      </div>
+                    </>
+                  )
+                },
+                {
+                  title: 'Ngày hết hạn',
+                  dataIndex: 'ngay_het_han',
+                  key: 'ngay_het_han',
+                  width: 220,
+                  render: (value, row) => {
+                    return (
                       <>
-                        <Check2Square
-                          size={18}
-                          style={{ margin: '0 6px' }}
-                          color="green"
-                          onClick={() => handleComplete(row.id)}
-                        ></Check2Square>
+                        <Typography.Paragraph
+                          style={{
+                            fontWeight: row.status ? '400' : '600',
+                            marginBottom: 0,
+                            color: row.status ? '#222' : checkIsDealine(row).quahan ? 'red' : 'green'
+                          }}
+                        >
+                          {moment(value).format('DD/MM/YYYY')}
+                        </Typography.Paragraph>
+
+                        {!checkIsDealine(row).quahan && !row.status && (
+                          <div>
+                            <Typography.Text
+                              italic
+                              style={{
+                                color: !checkIsDealine(row).quahan ? 'green' : 'red'
+                              }}
+                            >
+                              Còn hạn: {checkIsDealine(row).deadline} ngày
+                            </Typography.Text>
+                          </div>
+                        )}
+                        {checkIsDealine(row).quahan && !row.status && (
+                          <Tag color="red" style={{ fontWeight: '600' }}>
+                            Quá hạn
+                          </Tag>
+                        )}
                       </>
-                    )}
-                  </Space>
-                )
-              }
-            ]}
-          ></Table>
+                    );
+                  }
+                },
+                {
+                  title: 'Ngày giao',
+                  dataIndex: 'ngay_giao',
+                  key: 'ngay_giao',
+                  render: value => <>{value ? moment(value).format('DD/MM/YYYY') : ''}</>
+                },
+                {
+                  title: 'Trạng thái',
+                  dataIndex: 'status',
+                  key: 'status',
+                  width: -1,
+                  render: (value, row) => (
+                    <Space size="small">
+                      <Tag color={value ? 'green' : 'red'} style={{ fontWeight: 600 }}>
+                        {value ? 'OK' : 'NO'}
+                      </Tag>
+                      <Popconfirm
+                        className="popover-wrapper"
+                        title="Xóa công việc"
+                        description="Bạn có chắc chắn muốn xóa công việc này?"
+                        onConfirm={() => handleDelete(row.id)}
+                        okText="Đồng ý"
+                        cancelText="Hủy"
+                        placement="left"
+                        icon={<TrashFill size={26} style={{ margin: '0 10px 0 0' }} color="#EF5350"></TrashFill>}
+                      >
+                        <Button
+                          variant="filled"
+                          color="danger"
+                          icon={<TrashFill color="#EF5350" size={16}></TrashFill>}
+                          style={{ border: '1px solid #EF535080', display: 'flex', alignItems: 'center' }}
+                        />
+                      </Popconfirm>
+                      {!value && (
+                        <Button
+                          variant="filled"
+                          color="green"
+                          icon={<Check2Square size={18} color="green" />}
+                          onClick={() => handleComplete(row.id)}
+                          style={{ border: '1px solid #39b145', display: 'flex', alignItems: 'center' }}
+                        />
+                      )}
+                    </Space>
+                  )
+                }
+              ]}
+            ></Table>
+          </div>
         </HomeWrapper>
       </Spin>
       {modalCongViec && (

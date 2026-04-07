@@ -1,34 +1,56 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Input, Button, Flex, Spin } from 'antd';
 import { IoReload } from 'react-icons/io5';
 import axios from 'axios';
 import { toast } from 'sonner';
 import useAuthStore from '../../store/useAuthStore';
 
-const LIST_USERS = [
-  {
-    id: 16,
-    username: 'tonnhat.vtna',
-    password: '789Abc1234@'
-  },
-  {
-    id: 38,
-    username: 'thuandn.nan',
-    password: 'Thuan@123'
-  }
-];
+const USERS_CONFIG_PATH = '/config/eoffice-users.json';
 
 function LoadCongViec({ onSuccess }) {
   const [isLoading, setIsLoading] = useState(false);
+  const [listUsers, setListUsers] = useState([]);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(true);
   const [valueOTP, setValueOTP] = useState('');
   const [isShowInputOTP, setIsShowInputOTP] = useState(false);
   const [OTPInfo, setOTPInfo] = useState(false);
   const [isShowModal, setIsShowModal] = useState(false);
   const user = useAuthStore(state => state.user);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadUsers = async () => {
+      setIsLoadingUsers(true);
+      try {
+        // Load config from public folder so credentials can be updated without touching source code.
+        const result = await axios.get(USERS_CONFIG_PATH);
+        if (isMounted) {
+          setListUsers(Array.isArray(result.data) ? result.data : []);
+        }
+      } catch (error) {
+        if (isMounted) {
+          setListUsers([]);
+        }
+        toast.error('Không đọc được cấu hình tài khoản eOffice');
+      } finally {
+        if (isMounted) {
+          setIsLoadingUsers(false);
+        }
+      }
+    };
+
+    loadUsers();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const handleSendOTP = async () => {
-    const body = LIST_USERS.find(ele => ele.username === user?.username);
+    if (isLoadingUsers) return toast.info('Đang tải cấu hình tài khoản eOffice');
+    const body = listUsers.find(ele => ele.username === user?.username);
     if (!body) return toast.error('Kiểm tra tài khoản đăng nhập');
     setIsShowModal(true);
     setIsLoading(true);
@@ -91,12 +113,14 @@ function LoadCongViec({ onSuccess }) {
   return (
     <>
       <Button
-        type="primary"
+        variant="filled"
+        color="blue"
         onClick={() => {
           handleSendOTP();
         }}
         loading={isLoading}
-        icon={<IoReload style={{ position: 'relative' }}></IoReload>}
+        style={{ border: '1px solid var(--color-blue-500)' }}
+        icon={<IoReload style={{ position: 'relative' }} />}
       >
         Load công việc
       </Button>

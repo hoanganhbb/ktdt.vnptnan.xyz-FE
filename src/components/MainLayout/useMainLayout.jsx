@@ -35,29 +35,43 @@ export default function useMainLayout() {
 
     const items = [];
 
+    const projectsInfomationMenusGroup = {
+      type: 'group', // Must have
+      label: 'Dự án Công nghệ thông tin',
+      children: []
+    };
+
     if (roleGroup?.includes('adminstrator')) {
       items.push({
-        key: '/congviec',
-        icon: <IoCalendarOutline size={26} />,
-        label: 'Công việc lãnh đạo VTT'
+        type: 'group', // Must have
+        label: 'Quản lý công việc',
+        children: [
+          {
+            key: '/congviec',
+            icon: <IoCalendarOutline size={26} />,
+            label: 'Công việc lãnh đạo VTT'
+          }
+        ]
       });
     }
 
     if (profiles?.permission?.includes('du_an_cap_tinh')) {
-      items.push({
+      projectsInfomationMenusGroup.children.push({
         key: '/duancntt',
         icon: <IoFolderOpenOutline size={24} />,
-        label: 'Dự án CNTT tỉnh'
+        label: 'Dự án cấp tỉnh'
       });
     }
 
     if (profiles?.permission?.includes('du_an_cap_huyen')) {
-      items.push({
+      projectsInfomationMenusGroup.children.push({
         key: '/duancapxa',
         icon: <IoFolderOpenOutline size={24} />,
-        label: 'Dự án CNTT xã'
+        label: 'Dự án cấp xã'
       });
     }
+
+    items.push(projectsInfomationMenusGroup);
 
     return items;
   }, [roleGroup, profiles]);

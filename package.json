@@ -46,9 +46,15 @@
     "zustand": "^5.0.11"
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --mode development",
+    "dev:prod": "vite --mode production",
+    "start": "npm run dev",
+    "start:prod": "npm run dev:prod",
     "build": "vite build",
+    "build:dev": "vite build --mode development",
+    "build:prod": "vite build --mode production",
     "preview": "vite preview",
+    "preview:prod": "vite preview --mode production",
     "publish": "npm run build && scp -r -P 2213 build/* root@113.160.171.15:/opt/ktdt-one-app",
     "test": "react-scripts test",
     "eject": "react-scripts eject",

@@ -3,7 +3,7 @@ import { Modal, Form, Input, message, Flex } from 'antd';
 import { LockOutlined, LogoutOutlined, KeyOutlined } from '@ant-design/icons';
 import requestAPI from '../../utils/requestAPI';
 
-export default function UserDropdown({ user, onLogout }) {
+export default function UserDropdown({ user, onLogout, profiles }) {
   const [open, setOpen] = useState(false);
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
   const [form] = Form.useForm();
@@ -59,8 +59,8 @@ export default function UserDropdown({ user, onLogout }) {
               {initials}
             </div>
             <div className="ml-2 md:hidden lg:flex lg:flex-col lg:justify-center">
-              <p className="truncate text-sm font-semibold text-white">{user?.name}</p>
-              <p className="truncate text-xs text-gray-200">{user?.username}</p>
+              <p className="truncate text-sm font-semibold">{user?.name}</p>
+              <p className="truncate text-xs text-gray-500 text-left">{profiles?.rolegroup[0]}</p>
             </div>
           </Flex>
         </button>

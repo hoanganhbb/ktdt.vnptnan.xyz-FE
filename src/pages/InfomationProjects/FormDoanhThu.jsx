@@ -8,24 +8,28 @@ import { colors } from '../../utils/theme';
 import { formatCash } from '../../utils/constant';
 import { toast } from 'sonner';
 import { TrashFill } from 'react-bootstrap-icons';
+import dayjs from 'dayjs';
 
 function FormDoanhThu({ onClose, data, onFinish }) {
   const [dataDoanhThu, setDataDoanhThu] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setDataDoanhThu(data.doanh_thu_du_kien.sort((a, b) => a.nam - b.nam));
+    const sortedData = [...(data?.doanh_thu_du_kien || [])]?.sort((a, b) => a.nam - b.nam).map(item => ({ ...item }));
+    setDataDoanhThu(sortedData);
   }, [data]);
 
   const handleChangeValue = (value, index) => {
+    console.log(value);
+
     const newData = [...dataDoanhThu];
-    newData[index].gia_tri = value;
+    newData[index] = { ...newData[index], gia_tri: value };
     setDataDoanhThu(newData);
   };
 
   const handleChangeYear = (value, index) => {
     const newData = [...dataDoanhThu];
-    newData[index].nam = value;
+    newData[index] = { ...newData[index], nam: value };
     setDataDoanhThu(newData);
   };
 
@@ -94,19 +98,7 @@ function FormDoanhThu({ onClose, data, onFinish }) {
                 }}
               ></Input>
               <Input
-                value={
-                  ele.gia_tri.toString()
-                    ? ele.gia_tri
-                        .toString()
-                        .toString()
-                        .replaceAll(',', '')
-                        .split('')
-                        .reverse()
-                        .reduce((prev, next, index) => {
-                          return (index % 3 ? next : next + ',') + prev;
-                        })
-                    : ''
-                }
+                value={ele.gia_tri ? formatCash(ele.gia_tri) : ''}
                 onChange={e => {
                   handleChangeValue(e.target.value.replaceAll(',', ''), idx);
                 }}
@@ -149,7 +141,7 @@ function FormDoanhThu({ onClose, data, onFinish }) {
               setDataDoanhThu([
                 ...dataDoanhThu,
                 {
-                  nam: '',
+                  nam: dayjs().year(),
                   gia_tri: ''
                 }
               ]);

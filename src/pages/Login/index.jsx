@@ -41,10 +41,8 @@ export default function LoginPage() {
 
     try {
       const tokenRes = await requestAPI.post('api/token/', body, options);
-      console.log(tokenRes);
-
       const accessToken = tokenRes?.data?.access;
-      if (!accessToken) throw new Error('Không nhận được access token');
+      if (!accessToken) throw new Error('Thông tin đăng nhập không hợp lệ');
 
       setAccessToken(accessToken);
 
@@ -56,8 +54,6 @@ export default function LoginPage() {
       if (!userInfo) throw new Error('Không tìm thấy thông tin người dùng');
 
       login({ username, ...userInfo });
-
-      toast.success('Đăng nhập thành công');
     } catch (err) {
       console.error('Lỗi đăng nhập:', err);
       toast.error(err?.message || 'Đăng nhập thất bại');

@@ -23,7 +23,8 @@ export default function HomePage() {
   // const [textSearch, setTextSearch] = useState('');
   const [filterCondition, setFilterCondition] = useState({
     textSearch: '',
-    linhVucDuAn: null
+    linhVucDuAn: null,
+    cap_du_an: 10
   });
   const [isLoading, setIsLoading] = useState(false);
 
