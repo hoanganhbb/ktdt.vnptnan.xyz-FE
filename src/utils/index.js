@@ -9,7 +9,7 @@ const TRANG_THAI_HD_DA_KY = 6;
 
 export const selectorDuAnCapTinhConHieuLuc = data => {
   return data
-    .filter(ele => ele.cap_du_an === DU_AN_CAP_TINH_ID && ele.trang_thai_hop_dong !== TRANG_THAI_HD_HET_HAN)
+    .filter(ele => ele.trang_thai_hop_dong !== TRANG_THAI_HD_HET_HAN)
     .sort((a, b) => dayjs(b.ngay_hop_dong).diff(dayjs(a.ngay_hop_dong), 'day'));
 };
 

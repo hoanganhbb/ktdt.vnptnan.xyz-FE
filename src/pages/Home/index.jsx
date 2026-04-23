@@ -23,14 +23,13 @@ export default function HomePage() {
   // const [textSearch, setTextSearch] = useState('');
   const [filterCondition, setFilterCondition] = useState({
     textSearch: '',
-    linhVucDuAn: null,
-    cap_du_an: 10
+    linhVucDuAn: null
   });
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchData = () => {
     setIsLoading(true);
-    Promise.all([requestAPI.get(`api/profile/`), requestAPI.get('api/duancntt/')])
+    Promise.all([requestAPI.get(`api/profile/`), requestAPI.get('api/duancntt/?cap_du_an=9')])
       .then(response => {
         DANH_MUC.current = response[0].data;
         console.log(response[1].data);
