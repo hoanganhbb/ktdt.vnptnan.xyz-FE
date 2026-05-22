@@ -75,7 +75,7 @@ function FormCreateDuAn() {
   };
 
   return (
-    <>
+    <div style={{ padding: 20 }}>
       <Spin tip="Đang tải dữ liệu..." spinning={isLoading} fullscreen></Spin>
       <Form layout="vertical" form={form} name="control-hooks" validateMessages={validateMessages}>
         {DANH_MUC.current && (
@@ -190,14 +190,14 @@ function FormCreateDuAn() {
                   getValueProps={text =>
                     text
                       ? {
-                          value: text
-                            .replaceAll(',', '')
-                            .split('')
-                            .reverse()
-                            .reduce((prev, next, index) => {
-                              return (index % 3 ? next : next + ',') + prev;
-                            })
-                        }
+                        value: text
+                          .replaceAll(',', '')
+                          .split('')
+                          .reverse()
+                          .reduce((prev, next, index) => {
+                            return (index % 3 ? next : next + ',') + prev;
+                          })
+                      }
                       : ''
                   }
                   getValueFromEvent={onChange => {
@@ -324,7 +324,7 @@ function FormCreateDuAn() {
           </div>
         )}
       </Form>
-    </>
+    </div>
   );
 }
 

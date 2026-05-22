@@ -1,18 +1,18 @@
 import { colors } from '../../utils/theme';
 import { Layout, Spin, Menu, Input, Button, Flex } from 'antd';
 const { Header, Content, Sider } = Layout;
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { LayoutWrapper } from './styled';
 import { isMobile } from 'react-device-detect';
 import { MenuOutlined } from '@ant-design/icons';
 import useMainLayout from './useMainLayout';
 import UserDropdown from './UserDropdown';
-import { IoNotificationsSharp, IoExpand, IoSearch } from 'react-icons/io5';
+import { IoNotificationsSharp, IoExpand, IoSearch, IoBarChartSharp } from 'react-icons/io5';
 
-const VNPT_SIDEBAR_LOGO =
-  'https://iocrealty.com/wp-content/uploads/images/phan-tich-cac-yeu-to-thiet-ke-trong-logo-vnpt-0.png';
+const VNPT_SIDEBAR_LOGO = 'https://media-vnpt.vnptvas.vn/Media/Images/28082023/logo%20VNPT.png';
 
 export default function MainLayout() {
+  const navigation = useNavigate();
   const {
     user,
     profiles,
@@ -27,7 +27,12 @@ export default function MainLayout() {
   } = useMainLayout();
 
   return (
-    <LayoutWrapper style={{ height: '100vh', overflow: 'hidden' }}>
+    <LayoutWrapper
+      style={{
+        height: '100vh',
+        overflow: 'hidden'
+      }}
+    >
       <Spin spinning={isLoading} fullscreen />
 
       <Sider
@@ -79,17 +84,10 @@ export default function MainLayout() {
                 prefix={<IoSearch color="var(--color-gray-400)" style={{ marginRight: 4 }} size={16} />}
                 style={{ width: '100%', height: 36 }}
                 suffix={
-                  <Button
-                    type="default"
-                    size="small"
-                    onClick={() => {}}
-                    style={{ fontWeight: 600, fontSize: 12 }}
-                    disabled
-                  >
+                  <Button type="default" size="small" style={{ fontWeight: 600, fontSize: 12 }} disabled>
                     &#8984; K
                   </Button>
                 }
-                onPressEnter={() => {}}
               />
             </Flex>
             <div
@@ -111,15 +109,29 @@ export default function MainLayout() {
             >
               <IoNotificationsSharp size={22} color={colors.primary} />
             </div>
+            {user?.username === 'phanducanh.nan' && (
+              <div
+                className={[
+                  'hidden md:flex items-center p-2 justify-center',
+                  ' hover:bg-blue-500/20 rounded-full cursor-pointer aspect-square',
+                  'transition-full duration-200'
+                ].join(' ')}
+                onClick={() => navigation('/admin/vanbandieuhanh')}
+              >
+                <IoBarChartSharp size={22} color={colors.primary} />
+              </div>
+            )}
             <UserDropdown user={user} profiles={profiles} onLogout={handleLogout} />
           </div>
         </Header>
         <Content
           style={{
-            padding: 24,
             margin: 0,
             height: 'calc(100vh - 60px)',
-            overflowY: 'auto'
+            overflowY: 'auto',
+            background: 'linear-gradient(180deg, #f8fbff 0%, #eef4ff 45%, #f7f9fc 100%)',
+            backgroundSize: 'cover',
+            backgroundPosition: '0 0'
           }}
         >
           <Outlet />

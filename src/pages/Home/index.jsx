@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import requestAPI from '../../utils/requestAPI';
 import { useNavigate } from 'react-router-dom';
-import { Col, Table, Typography, Row, Tag, Flex, Input, Button, Drawer, Spin, Divider } from 'antd';
+import { Col, Table, Typography, Row, Tag, Flex, Input, Button, Spin, Divider } from 'antd';
 import { HomeWrapper } from './styled';
 import { formatCash } from '../../utils/constant';
 import moment from 'moment';
-import { BsFillGrid3X3GapFill, BsBoxArrowRight } from 'react-icons/bs';
+import { BsFillGrid3X3GapFill, BsBoxArrowRight, BsListUl } from 'react-icons/bs';
 import { toast } from 'sonner';
 import { colors } from '../../utils/theme';
 import { FaWallet } from 'react-icons/fa';
@@ -19,8 +19,6 @@ export default function HomePage() {
   const [data, setData] = useState([]);
   const [filterData, setFilterData] = useState([]);
   const [indexView, setIndexView] = useState(1);
-  const [selectedData, setSelectedData] = useState();
-  // const [textSearch, setTextSearch] = useState('');
   const [filterCondition, setFilterCondition] = useState({
     textSearch: '',
     linhVucDuAn: null
@@ -29,14 +27,12 @@ export default function HomePage() {
 
   const fetchData = () => {
     setIsLoading(true);
-    Promise.all([requestAPI.get(`api/profile/`), requestAPI.get('api/duancntt/?cap_du_an=9')])
+    Promise.all([requestAPI.get('api/profile/'), requestAPI.get('api/duancntt/?cap_du_an=9')])
       .then(response => {
         DANH_MUC.current = response[0].data;
-        console.log(response[1].data);
         const newData = selectorDuAnCapTinhConHieuLuc(response[1].data);
         setData(newData);
         setFilterData(newData);
-        // if (response[0].data.me.don_vi !== 'VNPT Nghệ An') navigate('/baocao/cntt-dia-ban')
       })
       .catch(e => toast.error(e))
       .finally(() => setIsLoading(false));
@@ -47,19 +43,20 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    console.log(filterCondition);
-    let resutSearchText = [];
-    if (filterCondition.textSearch || filterCondition.textSearch.length >= 3) resutSearchText = [...data];
-    resutSearchText = data.filter(
-      item =>
-        item.ten_du_an.toLowerCase().includes(filterCondition.textSearch.toLowerCase()) ||
-        item.ten_viet_tat.toLowerCase().includes(filterCondition.textSearch.toLowerCase())
+    const keyword = filterCondition.textSearch.trim().toLowerCase();
+    let resultSearchText = data.filter(
+      item => item.ten_du_an.toLowerCase().includes(keyword) || item.ten_viet_tat.toLowerCase().includes(keyword)
     );
-    let resutSearchType = [...resutSearchText];
-    if (filterCondition.linhVucDuAn)
-      resutSearchType = resutSearchText.filter(ele => ele.linh_vuc_du_an.includes(filterCondition.linhVucDuAn));
-    setFilterData(resutSearchType);
-  }, [filterCondition]);
+
+    if (!keyword) resultSearchText = [...data];
+
+    let resultSearchType = [...resultSearchText];
+    if (filterCondition.linhVucDuAn) {
+      resultSearchType = resultSearchText.filter(ele => ele.linh_vuc_du_an.includes(filterCondition.linhVucDuAn));
+    }
+
+    setFilterData(resultSearchType);
+  }, [filterCondition, data]);
 
   const downloadFile = (res, name) => {
     const url = window.URL.createObjectURL(new Blob([res.data]));
@@ -80,535 +77,294 @@ export default function HomePage() {
         downloadFile(res, `baocao_duan_cntt_${Date.now()}.xlsx`);
       })
       .catch(() => {
-        toast.error('Có lỗi xảy ra trong quá trình xuất excel');
+        toast.error('Có lỗi xảy ra trong quá trình xuất Excel');
       })
       .finally(() => setIsLoading(false));
   };
 
-  return (
-    <HomeWrapper>
-      <Spin tip="Đang tải dữ liệu..." spinning={isLoading} fullscreen></Spin>
-      <Flex align="center" justify="space-between">
-        <div style={{ width: '100%' }}>
-          <Typography.Title level={4} style={{ margin: 0, textTransform: 'uppercase' }}>
-            Quản lý dự án công nghệ thông tin ({data?.length})
-          </Typography.Title>
-          <div>
-            <Typography.Text style={{ fontStyle: 'italic', fontSize: 12 }}>
-              (Mặc định sắp xếp theo ngày ký)
-            </Typography.Text>
-          </div>
-        </div>
-        <div style={{ margin: '0 30px' }}></div>
-        <Flex align="center" gap={6} style={{ width: '100%' }}>
-          <Input
-            style={{
-              borderRadius: 8,
-              height: 37,
-              marginRight: 20
-            }}
-            allowClear
-            value={filterCondition.textSearch}
-            onChange={e =>
-              setFilterCondition({
-                ...filterCondition,
-                textSearch: e.target.value
-              })
-            }
-            placeholder="Tìm kiếm dự án"
-          ></Input>
-          <Flex
-            align="center"
-            justify="center"
-            style={{
-              padding: 4,
-              borderRadius: 8,
-              background: indexView === 1 ? '#1A365D' : 'transparent',
-              height: 30,
-              width: 30,
-              color: indexView === 1 ? 'white' : '#1A365D',
-              cursor: 'pointer'
-            }}
-          >
-            <BsFillGrid3X3GapFill size={20} onClick={() => setIndexView(1)} />
-          </Flex>
+  const linhVucDuAnList = [...(DANH_MUC.current?.linh_vuc_du_an || [])].sort((a, b) => a.id - b.id);
+  const linhVucStats = linhVucDuAnList.map(ele => {
+    const projectsInField = data.filter(element => element.linh_vuc_du_an.includes(ele.id));
+    return {
+      ...ele,
+      projectCount: projectsInField.length,
+      totalRevenue: projectsInField.reduce((acc, currentValue) => acc + currentValue.gia_tri_hop_dong, 0)
+    };
+  });
+  const totalRevenue = formatCash(
+    data.reduce((acc, currentValue) => acc + currentValue.gia_tri_hop_dong, 0),
+    true
+  );
+  const signedContracts = filterData.filter(ele => ele.trang_thai_hop_dong === 6);
+  const unsignedContracts = filterData.filter(ele => ele.trang_thai_hop_dong === 5);
 
-          <Button type="primary" style={{ fontWeight: 500 }} onClick={() => navigate(`/duancntt/create`)}>
-            Thêm dự án
-          </Button>
-          <Button type="primary" icon={<FaDownload />} style={{ fontWeight: 500 }} onClick={handleExport}>
-            Xuất Excel
+  const renderProjectCard = item => {
+    const statusName = DANH_MUC.current?.trang_thai_hop_dong?.find(ele => ele.id === item.trang_thai_hop_dong)?.name;
+
+    return (
+      <div className="project-card">
+        <Flex justify="space-between" className="project-card-header">
+          <div className="project-short-name">{item.ten_viet_tat}</div>
+          <div className="project-contract-number">{item.so_hop_dong || '---'}</div>
+        </Flex>
+
+        <Typography.Text className="project-title-text">
+          {item.ten_du_an}{' '}
+          {statusName && <Tag color={item.trang_thai_hop_dong === 6 ? 'green' : 'orange'}>{statusName}</Tag>}
+        </Typography.Text>
+
+        <Flex wrap gap={6} className="project-tags-wrap">
+          {DANH_MUC.current?.linh_vuc_du_an
+            ?.filter(element => item.linh_vuc_du_an.includes(element.id))
+            .map(ele => (
+              <Tag color="blue" key={ele.id} style={{ fontSize: 12, fontWeight: 500 }}>
+                {ele.name}
+              </Tag>
+            ))}
+        </Flex>
+
+        <div className="project-metric-row">
+          <span>Giá trị</span>
+          <Typography.Text strong className="project-metric-value">
+            {formatCash(item.gia_tri_hop_dong)} đ
+          </Typography.Text>
+        </div>
+
+        <div className="project-metric-row">
+          <span>Ngày ký HĐ</span>
+          <strong>{item.ngay_hop_dong ? dayjs(item.ngay_hop_dong).format('DD/MM/YYYY') : '---'}</strong>
+        </div>
+
+        <div className="project-metric-row">
+          <span>Số tháng</span>
+          <strong>
+            {item.ngay_het_hop_dong
+              ? `${moment(item.ngay_het_hop_dong).diff(moment(item.ngay_bat_dau_hop_dong), 'months') + 1} tháng`
+              : '---'}
+          </strong>
+        </div>
+
+        <div className="project-metric-row">
+          <span>Ngày hết hạn HĐ</span>
+          <strong>{item.ngay_het_hop_dong ? dayjs(item.ngay_het_hop_dong).format('DD/MM/YYYY') : '---'}</strong>
+        </div>
+
+        <Flex justify="flex-end" className="project-card-footer">
+          <Button type="primary" onClick={() => navigate(`/duancntt/${item.id}`)}>
+            <BsBoxArrowRight size={18} />
           </Button>
         </Flex>
-      </Flex>
+      </div>
+    );
+  };
 
-      <div style={{ background: '#EDF2F7', margin: '8px 0', height: 1 }}></div>
+  return (
+    <HomeWrapper>
+      <Spin tip="Đang tải dữ liệu..." spinning={isLoading} fullscreen />
 
-      {data && !!data.length && (
-        <>
-          <Row gutter={16} style={{}}>
-            {/* <Col xs={24} sm={8} md={8} lg={6} xl={2} className="gutter-row" style={{ marginBottom: 10 }}>
-              <div
-                style={{
-                  background: '#EBF8FF',
-                  borderRadius: 10,
-                  padding: 12,
-                  boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-                  height: '100%'
-                }}
-              >
-                <p style={{ textAlign: 'center', fontSize: 40, color: '#234E52', fontWeight: 700, margin: '10px 0' }}>
-                  {data.length}
-                </p>
-                <p style={{ textAlign: 'center', color: '#234E52', fontWeight: 600 }}>DỰ ÁN</p>
-              </div>
-            </Col> */}
+      <div className="home-shell">
+        <div className="home-header-panel">
+          <Flex align="center" justify="space-between" gap={24}>
+            <div className="home-title-block">
+              <Typography.Title level={4} className="home-title">
+                Quản lý dự án công nghệ thông tin
+              </Typography.Title>
+              <Typography.Text className="home-subtitle">
+                Tổng số dự án: {data?.length} • Mặc định sắp xếp theo ngày ký
+              </Typography.Text>
+            </div>
 
-            <Col
-              className="gutter-row"
-              style={{ marginBottom: 10, cursor: 'pointer' }}
-              span={3}
-              onClick={() => {
-                setFilterCondition({
-                  ...filterCondition,
-                  linhVucDuAn: null
-                });
-              }}
-            >
-              <div
-                style={{
-                  background: '#F0FFF4',
-                  borderRadius: 10,
-                  padding: 10,
-                  boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-                  height: '100%'
-                }}
-              >
-                <p style={{ textAlign: 'center', fontSize: 32, color: '#234E52', fontWeight: 700, margin: '10px 0' }}>
-                  {formatCash(
-                    data.reduce((acc, currentValue) => acc + currentValue.gia_tri_hop_dong, 0),
-                    true
-                  )}
-                </p>
-                <p style={{ textAlign: 'center', color: '#234E52', fontWeight: 600, fontSize: 14 }}>TỔNG DOANH THU</p>
-              </div>
-            </Col>
+            <Flex align="center" gap={8} className="home-controls">
+              <Input
+                className="search-input"
+                allowClear
+                value={filterCondition.textSearch}
+                onChange={e =>
+                  setFilterCondition({
+                    ...filterCondition,
+                    textSearch: e.target.value
+                  })
+                }
+                placeholder="Tìm kiếm theo tên viết tắt hoặc tên dự án"
+              />
 
-            {DANH_MUC.current &&
-              data &&
-              DANH_MUC.current.linh_vuc_du_an
-                .sort((a, b) => a.id - b.id)
-                .map((ele, index) => (
-                  <Col
-                    className="gutter-row"
-                    style={{ marginBottom: 10, cursor: 'pointer' }}
-                    key={index}
-                    onClick={() => {
+              <Flex className="view-switch">
+                <button
+                  className={indexView === 1 ? 'view-switch-btn active' : 'view-switch-btn'}
+                  type="button"
+                  onClick={() => setIndexView(1)}
+                >
+                  <BsFillGrid3X3GapFill size={16} />
+                </button>
+                <button
+                  className={indexView === 2 ? 'view-switch-btn active' : 'view-switch-btn'}
+                  type="button"
+                  onClick={() => setIndexView(2)}
+                >
+                  <BsListUl size={16} />
+                </button>
+              </Flex>
+
+              <Button type="primary" className="action-btn" onClick={() => navigate('/duancntt/create')}>
+                Thêm dự án
+              </Button>
+              <Button type="default" className="action-btn export-btn" icon={<FaDownload />} onClick={handleExport}>
+                Xuất Excel
+              </Button>
+            </Flex>
+          </Flex>
+        </div>
+
+        {!!data.length && (
+          <>
+            <Row gutter={[12, 12]} className="stats-row">
+              <Col xs={24} sm={12} md={8} lg={6}>
+                <div
+                  className="metric-card muted"
+                  onClick={() => setFilterCondition({ ...filterCondition, linhVucDuAn: null })}
+                >
+                  <Typography.Text className="metric-card-label">Tổng doanh thu</Typography.Text>
+                  <Typography.Title level={2} className="metric-card-value">
+                    {totalRevenue}
+                  </Typography.Title>
+                  <div className="metric-card-caption">Tất cả lĩnh vực</div>
+                </div>
+              </Col>
+
+              {linhVucStats.map(ele => (
+                <Col xs={24} sm={12} md={12} lg={8} xl={6} xxl={4} key={ele.id}>
+                  <div
+                    className={filterCondition.linhVucDuAn === ele.id ? 'metric-card active' : 'metric-card'}
+                    onClick={() =>
                       setFilterCondition({
                         ...filterCondition,
                         linhVucDuAn: filterCondition.linhVucDuAn === ele.id ? null : ele.id
-                      });
-                    }}
-                    span="auto"
+                      })
+                    }
                   >
-                    <div
-                      style={{
-                        color: filterCondition.linhVucDuAn === ele.id ? colors.white : colors.blue[`${index + 7}00`],
-                        borderRadius: 10,
-                        padding: 10,
-                        border: '1px solid #e9e9e9',
-                        boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-                        height: '100%',
-                        width: 160,
-                        background: filterCondition.linhVucDuAn === ele.id ? colors.blue[800] : `${colors.blue[100]}30`,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'space-evenly',
-                        filter:
-                          filterCondition.linhVucDuAn && filterCondition.linhVucDuAn !== ele.id ? 'blur(2px)' : 'unset',
-                        transition: 200
-                      }}
-                    >
-                      <Flex align="flex-start" justify="space-between" style={{ flexDirection: 'column' }}>
-                        <div style={{ textAlign: 'center', fontWeight: 600, fontSize: 16 }}>{ele.name}</div>
-                      </Flex>
-                      <Flex justify="space-between" align="center">
-                        <FaWallet size={26} color={colors.blue[200]} />
-                        <p style={{ textAlign: 'center', fontSize: 20, fontWeight: 600, margin: '10px 0' }}>
-                          {formatCash(
-                            data
-                              .filter(element => element.linh_vuc_du_an.includes(ele.id))
-                              .reduce((acc, currentValue) => acc + currentValue.gia_tri_hop_dong, 0),
-                            true
-                          )}
-                        </p>
-                      </Flex>
-                    </div>
-                  </Col>
-                ))}
-          </Row>
-          <Flex style={{ background: 'white', padding: 12, borderRadius: 6, position: 'relative' }} gap={20}>
-            <div
-              style={{
-                width: '100%',
-                height: 1,
-                background: colors.blackAlpha[300],
-                position: 'absolute',
-                top: '49%'
-              }}
-            ></div>
-            {[2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027].map((ele, index) => (
-              <Flex
-                key={index}
-                justify="space-between"
-                align="center"
-                vertical
-                style={{
-                  color: '#234E52',
-                  marginBottom: 5,
-                  position: 'relative',
-                  border: '1px dashed #71717a50',
-                  padding: 8,
-                  borderRadius: 10,
-                  minWidth: 100
-                }}
-              >
-                <div style={{ fontWeight: 600, fontSize: 18, color: colors.blue[900], marginBottom: 10 }}>{ele}</div>
-                <div
-                  style={{
-                    fontWeight: 800,
-                    fontSize: 20,
-                    color: colors.blue[900],
-                    position: 'absolute',
-                    width: 10,
-                    height: 10,
-                    background: colors.blue[800],
-                    left: '50%',
-                    top: '45%',
-                    borderRadius: 9999,
-                    transform: 'translateX(-50%)'
-                  }}
-                ></div>
-                <div style={{ fontWeight: 700, fontSize: 16, marginTop: 16 }}>
-                  {calculateSumIncomeCapTinh(data, ele)}
-                </div>
-              </Flex>
-            ))}
-          </Flex>
-        </>
-      )}
+                    <Flex justify="space-between" align="center" className="metric-card-head">
+                      <Typography.Text className="metric-card-label">
+                        {ele.name} ({ele.projectCount})
+                      </Typography.Text>
+                      <FaWallet
+                        size={20}
+                        color={filterCondition.linhVucDuAn === ele.id ? colors.white : colors.blue[500]}
+                      />
+                    </Flex>
 
-      {indexView === 1 ? (
-        <>
-          <Divider
-            orientation="left"
-            style={{ color: colors.blue[800], borderColor: colors.blue[800], marginBottom: 6, fontSize: 16 }}
-          >
-            HỢP ĐỒNG ĐÃ KÝ ({filterData.filter(ele => ele.trang_thai_hop_dong === 6).length})
-          </Divider>
-          <Row gutter={16}>
-            {filterData
-              .filter(ele => ele.trang_thai_hop_dong === 6)
-              .map((item, idx) => (
-                <Col
-                  xs={24}
-                  sm={12}
-                  md={12}
-                  lg={8}
-                  xl={6}
-                  xxl={4}
-                  key={idx}
-                  className="gutter-row"
-                  style={{ marginBottom: 10 }}
-                >
-                  <div
-                    style={{
-                      background: 'white',
-                      borderRadius: 10,
-                      padding: 12,
-                      boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-                      height: '100%',
-                      paddingBottom: 60
-                    }}
-                  >
-                    <Flex justify="space-between">
-                      <div style={{ fontSize: 16, fontWeight: 600, color: '#718999' }}>{item.ten_viet_tat}</div>
-                      <div
-                        style={{
-                          fontWeight: 600,
-                          color: '#718096',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                          maxWidth: '66%'
-                        }}
-                      >
-                        {item.so_hop_dong}
-                      </div>
-                    </Flex>
-                    <div style={{ background: '#EDF2F7', margin: '6px 0', height: 1 }}></div>
-                    <div style={{ textAlign: 'justify', marginBottom: 5 }}>
-                      <Typography.Text style={{ fontWeight: 500, letterSpacing: 0 }}>
-                        {item.ten_du_an}{' '}
-                        {DANH_MUC && !!DANH_MUC.current.trang_thai_hop_dong.length && (
-                          <Tag color={item.trang_thai_hop_dong === 6 ? 'green' : 'red'} style={{ fontSize: 13 }}>
-                            {DANH_MUC.current.trang_thai_hop_dong.find(ele => ele.id === item.trang_thai_hop_dong).name}
-                          </Tag>
-                        )}
-                      </Typography.Text>
-                    </div>
-                    {/* {JSON.stringify(item.linh_vuc_du_an)} */}
-                    {/* {JSON.stringify(DANH_MUC.current?.linh_vuc_du_an)} */}
-                    <div>
-                      {DANH_MUC.current &&
-                        DANH_MUC.current?.linh_vuc_du_an
-                          .filter(element => item.linh_vuc_du_an.includes(element.id))
-                          .map(ele => (
-                            <Tag color="" style={{ fontSize: 13 }} key={ele.id}>
-                              {ele.name}
-                            </Tag>
-                          ))}
-                    </div>
-                    <div style={{ background: '#EDF2F7', margin: '8px 0', height: 1 }}></div>
-                    <Flex align="center" justify="space-between" style={{ textAlign: 'right' }}>
-                      <div>Giá trị: </div>
-                      <Typography.Title level={5} style={{ margin: 0, color: '#2C5282' }}>
-                        {formatCash(item.gia_tri_hop_dong)} đ
-                      </Typography.Title>
-                    </Flex>
-                    <div style={{ background: '#EDF2F7', margin: '6px 0', height: 1 }}></div>
-                    <Flex align="center" justify="space-between" style={{ textAlign: 'right' }}>
-                      <div>Ngày ký HĐ:</div>
-                      {item.ngay_hop_dong ? (
-                        <div style={{ fontWeight: 600 }}>{dayjs(item.ngay_hop_dong).format('DD/MM/YYYY')}</div>
-                      ) : (
-                        '---'
-                      )}
-                    </Flex>
-                    <div style={{ background: '#EDF2F7', margin: '6px 0', height: 1 }}></div>
-                    <Flex align="center" justify="space-between" style={{ textAlign: 'right' }}>
-                      <div>Số tháng:</div>
-                      {item.ngay_het_hop_dong && (
-                        <div style={{ fontWeight: 600 }}>
-                          {moment(item.ngay_het_hop_dong).diff(moment(item.ngay_bat_dau_hop_dong), 'months') + 1} tháng
-                        </div>
-                      )}
-                    </Flex>
-                    <div style={{ background: '#EDF2F7', margin: '6px 0', height: 1 }}></div>
-                    <Flex align="center" justify="space-between" style={{ textAlign: 'right' }}>
-                      <div>Ngày hết hạn HĐ:</div>
-                      {item.ngay_het_hop_dong ? (
-                        <div style={{ fontWeight: 600 }}>{dayjs(item.ngay_het_hop_dong).format('DD/MM/YYYY')}</div>
-                      ) : (
-                        '---'
-                      )}
-                    </Flex>
-                    <div style={{ background: '#EDF2F7', margin: '6px 0', height: 1 }}></div>
-                    <Flex
-                      align="center"
-                      justify="flex-end"
-                      gap={8}
-                      style={{ position: 'absolute', bottom: 16, width: 'calc(100% - 24px)', left: 0 }}
-                    >
-                      {/* <Button onClick={() => setSelectedData(item)}>Xem nhanh</Button> */}
-                      <Button type="primary" onClick={() => navigate(`/duancntt/${item.id}`)}>
-                        <BsBoxArrowRight size={22} />
-                      </Button>
-                    </Flex>
+                    <Typography.Title level={4} className="metric-card-value" style={{ margin: 0 }}>
+                      {formatCash(ele.totalRevenue, true)}
+                    </Typography.Title>
+
+                    <div className="metric-card-caption">Doanh thu theo lĩnh vực</div>
                   </div>
                 </Col>
               ))}
-          </Row>
-          <Divider
-            orientation="left"
-            style={{ color: colors.blue[800], borderColor: colors.blue[800], marginBottom: 6 }}
-          >
-            HỢP ĐỒNG CHƯA KÝ ({filterData.filter(ele => ele.trang_thai_hop_dong === 5).length})
-          </Divider>
-          <Row gutter={16}>
-            {filterData
-              .filter(ele => ele.trang_thai_hop_dong === 5)
-              .map((item, idx) => (
-                <Col
-                  xs={24}
-                  sm={12}
-                  md={12}
-                  lg={8}
-                  xl={6}
-                  xxl={4}
-                  key={idx}
-                  className="gutter-row"
-                  style={{ marginBottom: 10 }}
-                >
-                  <div
-                    style={{
-                      background: 'white',
-                      borderRadius: 10,
-                      padding: 12,
-                      boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-                      height: '100%',
-                      paddingBottom: 60
-                    }}
-                  >
-                    <Flex justify="space-between">
-                      <div style={{ fontSize: 16, fontWeight: 600, color: '#718096' }}>{item.ten_viet_tat}</div>
-                      <div
-                        style={{
-                          fontWeight: 600,
-                          color: '#718096',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                          maxWidth: '66%'
-                        }}
-                      >
-                        {item.so_hop_dong}
-                      </div>
-                    </Flex>
-                    <div style={{ background: '#EDF2F7', margin: '6px 0', height: 1 }}></div>
-                    <div style={{ textAlign: 'justify', marginBottom: 5 }}>
-                      <Typography.Text style={{ fontWeight: 500, letterSpacing: 0 }}>
-                        {item.ten_du_an}{' '}
-                        {DANH_MUC && !!DANH_MUC.current.trang_thai_hop_dong.length && (
-                          <Tag color={item.trang_thai_hop_dong === 6 ? 'green' : 'red'} style={{ fontSize: 13 }}>
-                            {DANH_MUC.current.trang_thai_hop_dong.find(ele => ele.id === item.trang_thai_hop_dong).name}
-                          </Tag>
-                        )}
-                      </Typography.Text>
-                    </div>
-                    {/* {JSON.stringify(item.linh_vuc_du_an)} */}
-                    {/* {JSON.stringify(DANH_MUC.current?.linh_vuc_du_an)} */}
-                    <div>
-                      {DANH_MUC.current &&
-                        DANH_MUC.current?.linh_vuc_du_an
-                          .filter(element => item.linh_vuc_du_an.includes(element.id))
-                          .map(ele => (
-                            <Tag color="" style={{ fontSize: 13 }} key={ele.id}>
-                              {ele.name}
-                            </Tag>
-                          ))}
-                    </div>
-                    <div style={{ background: '#EDF2F7', margin: '8px 0', height: 1 }}></div>
-                    <Flex align="center" justify="space-between" style={{ textAlign: 'right' }}>
-                      <div>Giá trị: </div>
-                      <Typography.Title level={5} style={{ margin: 0, color: '#2C5282' }}>
-                        {formatCash(item.gia_tri_hop_dong)} đ
-                      </Typography.Title>
-                    </Flex>
-                    <div style={{ background: '#EDF2F7', margin: '6px 0', height: 1 }}></div>
-                    <Flex align="center" justify="space-between" style={{ textAlign: 'right' }}>
-                      <div>Số tháng:</div>
-                      {item.ngay_het_hop_dong ? (
-                        <div style={{ fontWeight: 600 }}>
-                          {moment(item.ngay_het_hop_dong).diff(moment(item.ngay_bat_dau_hop_dong), 'months') + 1} tháng
-                        </div>
-                      ) : (
-                        ''
-                      )}
-                    </Flex>
-                    <div style={{ background: '#EDF2F7', margin: '6px 0', height: 1 }}></div>
-                    <Flex align="center" justify="space-between" style={{ textAlign: 'right' }}>
-                      <div>Ngày ký HĐ:</div>
-                      {item.ngay_hop_dong ? (
-                        <div style={{ fontWeight: 600 }}>{dayjs(item.ngay_hop_dong).format('DD/MM/YYYY')}</div>
-                      ) : (
-                        '---'
-                      )}
-                    </Flex>
-                    <div style={{ background: '#EDF2F7', margin: '6px 0', height: 1 }}></div>
-                    <Flex align="center" justify="space-between" style={{ textAlign: 'right' }}>
-                      <div>Ngày hết hạn HĐ:</div>
-                      {item.ngay_het_hop_dong ? (
-                        <div style={{ fontWeight: 600 }}>{dayjs(item.ngay_het_hop_dong).format('DD/MM/YYYY')}</div>
-                      ) : (
-                        '---'
-                      )}
-                    </Flex>
-                    <div style={{ background: '#EDF2F7', margin: '6px 0', height: 1 }}></div>
-                    <Flex
-                      align="center"
-                      justify="flex-end"
-                      gap={8}
-                      style={{ position: 'absolute', bottom: 16, width: 'calc(100% - 24px)', left: 0 }}
-                    >
-                      {/* <Button onClick={() => setSelectedData(item)}>Xem nhanh</Button> */}
-                      <Button type="primary" onClick={() => navigate(`/duancntt/${item.id}`)}>
-                        <BsBoxArrowRight size={22} />
-                      </Button>
-                    </Flex>
-                  </div>
-                </Col>
+            </Row>
+
+            <div className="timeline-panel">
+              <div className="timeline-line" />
+              {[2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027].map(ele => (
+                <Flex key={ele} justify="space-between" align="center" vertical className="timeline-item">
+                  <div className="timeline-year">{ele}</div>
+                  <div className="timeline-dot" />
+                  <div className="timeline-value">{calculateSumIncomeCapTinh(data, ele)}</div>
+                </Flex>
               ))}
-          </Row>
-        </>
-      ) : (
-        <Table
-          dataSource={filterData}
-          pagination={false}
-          rowKey="id"
-          columns={[
-            {
-              title: 'STT',
-              dataIndex: 'id',
-              key: 'id',
-              align: 'center'
-            },
-            {
-              title: 'Tên viết tắt',
-              dataIndex: 'ten_viet_tat',
-              key: 'ten_viet_tat',
-              width: 160,
-              render: (value, row) => (
-                <>
-                  {value}
-                  {row.trang_thai_hop_dong === 6 && (
-                    <div>
-                      <Typography.Text strong style={{ color: 'green', fontSize: 14 }}>
-                        Đã ký HĐ
-                      </Typography.Text>
-                    </div>
-                  )}
-                </>
-              )
-            },
-            {
-              title: 'Tên dự án',
-              dataIndex: 'ten_du_an',
-              key: 'ten_du_an',
-              render: (value, row) => (
-                <div onClick={() => navigate(`/duancntt/${row.id}`)}>
-                  <div>
-                    <Typography.Text>Chủ đầu tư: {row.chu_dau_tu}</Typography.Text>
-                  </div>
-                  <Typography.Text strong>{value}</Typography.Text>
-                  {!!row.nhiem_vu_du_an.length && (
-                    <ul style={{ margin: '6px 0' }}>
-                      <li>
-                        <Typography.Text strong style={{ color: '#0D47A1' }}>
-                          Nhiệm vụ sắp tới:{' '}
-                          {row.nhiem_vu_du_an.filter(item => item.trang_thai_nhiem_vu_cntt === 8)[0].noi_dung} | Thời
-                          hạn:{' '}
-                          {row.nhiem_vu_du_an.filter(item => item.trang_thai_nhiem_vu_cntt === 8)[0].ngay_hoan_thanh}
+            </div>
+          </>
+        )}
+
+        {indexView === 1 ? (
+          <div className="table-wrapper card-mode">
+            {signedContracts && !!signedContracts.length && (
+              <>
+                <div className="title-with-count">HỢP ĐỒNG ĐÃ KÝ ({signedContracts.length})</div>
+                <Row gutter={[16, 16]}>
+                  {signedContracts.map(item => (
+                    <Col xs={24} sm={12} md={12} lg={8} xl={6} xxl={6} key={item.id} className="gutter-row">
+                      {renderProjectCard(item)}
+                    </Col>
+                  ))}
+                </Row>
+                <Divider style={{ margin: '16px 0' }} />
+              </>
+            )}
+
+            {unsignedContracts && !!unsignedContracts.length && (
+              <>
+                <div className="title-with-count">HỢP ĐỒNG CHƯA KÝ ({unsignedContracts.length})</div>
+                <Row gutter={[16, 16]}>
+                  {unsignedContracts.map(item => (
+                    <Col xs={24} sm={12} md={12} lg={8} xl={6} xxl={6} key={item.id} className="gutter-row">
+                      {renderProjectCard(item)}
+                    </Col>
+                  ))}
+                </Row>
+              </>
+            )}
+          </div>
+        ) : (
+          <div className="table-wrapper">
+            <Table
+              dataSource={filterData}
+              pagination={false}
+              rowKey="id"
+              columns={[
+                {
+                  title: 'STT',
+                  dataIndex: 'id',
+                  key: 'id',
+                  align: 'center',
+                  width: 80
+                },
+                {
+                  title: 'Tên viết tắt',
+                  dataIndex: 'ten_viet_tat',
+                  key: 'ten_viet_tat',
+                  width: 180,
+                  render: (value, row) => (
+                    <>
+                      <Typography.Text strong>{value}</Typography.Text>
+                      <div>
+                        <Typography.Text style={{ color: row.trang_thai_hop_dong === 6 ? '#0f9d58' : '#f59e0b' }}>
+                          {row.trang_thai_hop_dong === 6 ? 'Đã ký HĐ' : 'Chưa ký HĐ'}
                         </Typography.Text>
-                      </li>
-                    </ul>
-                  )}
-                </div>
-              )
-            },
-            {
-              title: 'Giá trị',
-              dataIndex: 'gia_tri_hop_dong',
-              key: 'gia_tri_hop_dong',
-              width: 120,
-              render: value => <>{value ? `${formatCash(value)}` : '---'}</>
-            }
-          ]}
-        ></Table>
-      )}
-      <Drawer title={selectedData?.ten_du_an} onClose={() => setSelectedData()} open={!!selectedData} width={700}>
-        <pre>{JSON.stringify(selectedData, null, 2)}</pre>
-      </Drawer>
+                      </div>
+                    </>
+                  )
+                },
+                {
+                  title: 'Tên dự án',
+                  dataIndex: 'ten_du_an',
+                  key: 'ten_du_an',
+                  render: (value, row) => {
+                    const nextTask = row.nhiem_vu_du_an?.find(item => item.trang_thai_nhiem_vu_cntt === 8);
+                    return (
+                      <div className="table-project-cell" onClick={() => navigate(`/duancntt/${row.id}`)}>
+                        <Typography.Text>Chủ đầu tư: {row.chu_dau_tu}</Typography.Text>
+                        <Typography.Text strong>{value}</Typography.Text>
+                        {nextTask && (
+                          <Typography.Text className="table-task-hint">
+                            Nhiệm vụ sắp tới: {nextTask.noi_dung} | Thời hạn: {nextTask.ngay_hoan_thanh}
+                          </Typography.Text>
+                        )}
+                      </div>
+                    );
+                  }
+                },
+                {
+                  title: 'Giá trị',
+                  dataIndex: 'gia_tri_hop_dong',
+                  key: 'gia_tri_hop_dong',
+                  width: 140,
+                  render: value => <>{value ? `${formatCash(value)}` : '---'}</>
+                }
+              ]}
+            />
+          </div>
+        )}
+      </div>
     </HomeWrapper>
   );
 }

@@ -10,7 +10,7 @@ import { FaFileCirclePlus, FaTrashCan } from 'react-icons/fa6';
 import { BiDownload } from 'react-icons/bi';
 import UploadFile from './UploadFile';
 import { toast } from 'sonner';
-
+import { steps } from '../../utils';
 function FormDuAnCNTT() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -66,7 +66,7 @@ function FormDuAnCNTT() {
   };
 
   return (
-    <>
+    <div style={{ padding: 20 }}>
       <Spin tip="Đang tải dữ liệu..." spinning={isLoading} fullscreen></Spin>
       <Form layout="vertical" form={form} name="control-hooks">
         {/* {JSON.stringify(data)} */}
@@ -185,15 +185,15 @@ function FormDuAnCNTT() {
                   getValueProps={text =>
                     text
                       ? {
-                          value: text
-                            .toString()
-                            .replaceAll(',', '')
-                            .split('')
-                            .reverse()
-                            .reduce((prev, next, index) => {
-                              return (index % 3 ? next : next + ',') + prev;
-                            })
-                        }
+                        value: text
+                          .toString()
+                          .replaceAll(',', '')
+                          .split('')
+                          .reverse()
+                          .reduce((prev, next, index) => {
+                            return (index % 3 ? next : next + ',') + prev;
+                          })
+                      }
                       : ''
                   }
                   getValueFromEvent={onChange => {
@@ -212,15 +212,15 @@ function FormDuAnCNTT() {
                   getValueProps={text =>
                     text
                       ? {
-                          value: text
-                            .toString()
-                            .replaceAll(',', '')
-                            .split('')
-                            .reverse()
-                            .reduce((prev, next, index) => {
-                              return (index % 3 ? next : next + ',') + prev;
-                            })
-                        }
+                        value: text
+                          .toString()
+                          .replaceAll(',', '')
+                          .split('')
+                          .reverse()
+                          .reduce((prev, next, index) => {
+                            return (index % 3 ? next : next + ',') + prev;
+                          })
+                      }
                       : ''
                   }
                   getValueFromEvent={onChange => {
@@ -262,6 +262,15 @@ function FormDuAnCNTT() {
               <Col span={4}>
                 <Form.Item label="Mã sản phẩm dịch vụ" required name="ma_san_pham_dich_vu">
                   <Input placeholder="Mã sản phẩm dịch vụ" />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item label="Bước thực hiện" required name="buoc_thuc_hien">
+                  <Select
+                    placeholder="Bước thực hiện"
+                    options={[...steps]}
+                    fieldNames={{ label: 'name', value: 'value' }}
+                  />
                 </Form.Item>
               </Col>
             </Row>
@@ -381,11 +390,11 @@ function FormDuAnCNTT() {
       {isOpenUpload && (
         <UploadFile
           data={data}
-          refresh={() => fetchData({ slient: true })}
+          refresh={() => fetchData({ silent: true })}
           onClose={() => setIsOpenUpload(false)}
         ></UploadFile>
       )}
-    </>
+    </div>
   );
 }
 

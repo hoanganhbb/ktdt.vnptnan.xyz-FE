@@ -18,6 +18,42 @@ import { colors } from '../../utils/theme';
 const today = dayjs();
 dayjs.extend(isSameOrAfter);
 
+const DEFAULT_PAGE = 1;
+const DEFAULT_PAGE_SIZE = 20;
+
+const getNumberQueryValue = (value, fallback) => {
+  const parsed = Number.parseInt(value, 10);
+  return Number.isNaN(parsed) || parsed <= 0 ? fallback : parsed;
+};
+
+const getInitialPaginationFromUrl = () => {
+  const currentQuery = queryString.parse(window.location.search);
+  return {
+    p: getNumberQueryValue(currentQuery?.p, DEFAULT_PAGE),
+    pageSize: getNumberQueryValue(currentQuery?.page_size, DEFAULT_PAGE_SIZE)
+  };
+};
+
+const syncPaginationToUrl = (page, pageSize) => {
+  const currentQuery = queryString.parse(window.location.search);
+  const nextQuery = {
+    ...currentQuery,
+    p: page,
+    page_size: pageSize
+  };
+
+  const query = queryString.stringify(nextQuery);
+  const nextUrl = `${window.location.pathname}${query ? `?${query}` : ''}`;
+  window.history.replaceState({}, '', nextUrl);
+};
+
+const buildCongViecParams = (searchValue, pageSize) => {
+  return {
+    ...searchValue,
+    page_size: pageSize
+  };
+};
+
 const checkIsDealine = data => {
   const deadline = moment(data.ngay_het_han).diff(moment(new Date()), 'days');
   const isQuaHan = !!today.isSameOrAfter(dayjs(data.ngay_het_han));
@@ -31,6 +67,7 @@ const checkIsDealine = data => {
 function CongViecLanhDao() {
   // const navigate = useNavigate();
   const { user } = useAuth();
+  const initialPagination = getInitialPaginationFromUrl();
   const [dataFilter, setDataFilter] = useState([]);
   const [danhmuc, setDanhMuc] = useState();
   const [modalCongViec, setModalCongViec] = useState(false);
@@ -41,18 +78,18 @@ function CongViecLanhDao() {
     don_vi_chu_tri: [],
     status: 1, // 1: Tất cả, 2: Chưa hoàn thành, 3: Hoàn thành
     expired: 1, // 1: Còn hạn, 2: Quá hạn
-    p: 1,
+    p: initialPagination.p,
     lanh_dao_vtt: user?.username === 'phanducanh.nan' ? '' : user?.id
   });
 
   const [pagination, setPagination] = useState({
     total: 0,
-    pageSize: 20,
+    pageSize: initialPagination.pageSize,
     totalCount: 0
   });
 
-  const fetchData = async isLoading => {
-    if (isLoading) setIsLoadingInit(true);
+  const fetchDanhMuc = () => {
+    setIsLoadingInit(true);
     Promise.all([requestAPI.get(`api/profile/`)])
       .then(res => {
         setDanhMuc(res[0].data);
@@ -60,11 +97,18 @@ function CongViecLanhDao() {
       .finally(() => setIsLoadingInit(false));
   };
 
+  const updateSearchValue = payload => {
+    setSearchValue(prev => ({
+      ...prev,
+      ...payload
+    }));
+  };
+
   const handleDelete = id => {
     requestAPI
       .delete(`api/congviec/${id}`)
       .then(() => {
-        toast.error('Xóa công việc thành công');
+        toast.success('Xóa công việc thành công');
         onSearch();
       })
       .catch(err => toast.error(JSON.stringify(err)));
@@ -81,27 +125,21 @@ function CongViecLanhDao() {
       })
       .then(() => {
         toast.success('Hoàn thành công việc');
-        fetchData();
+        fetchDanhMuc();
       })
       .catch(err => toast.error(JSON.stringify(err)));
   };
 
   const onSearch = () => {
-    const str =
-      '?' +
-      Object.keys(searchValue)
-        .map(key => {
-          return `${key}=${encodeURIComponent(searchValue[key])}`;
-        })
-        .join('&') +
-      `&page_size=${pagination?.pageSize}`;
+    const params = buildCongViecParams(searchValue, pagination?.pageSize);
+    const str = `?${queryString.stringify(params)}`;
     setIsLoading(true);
     requestAPI
       .get(`api/congviec/${str}`)
       .then(res => {
         setPagination({
           total: res.data?.count,
-          pageSize: 20,
+          pageSize: pagination?.pageSize,
           totalCount: res.data?.count
         });
         setDataFilter(res.data?.results);
@@ -131,15 +169,19 @@ function CongViecLanhDao() {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchDanhMuc();
   }, []);
 
   useEffect(() => {
     onSearch();
-  }, [searchValue]);
+  }, [searchValue, pagination.pageSize]);
+
+  useEffect(() => {
+    syncPaginationToUrl(searchValue.p, pagination.pageSize);
+  }, [searchValue.p, pagination.pageSize]);
 
   return (
-    <>
+    <div style={{ padding: 16 }}>
       <Spin spinning={isLoadingInit} tips="Đang tải dữ liệu...">
         <HomeWrapper>
           <Flex wrap align="center" justify="space-between" gap={16} className="mb-4!">
@@ -148,7 +190,7 @@ function CongViecLanhDao() {
                 Danh sách công việc eOffice
               </Typography.Title>
               <div className="text-sm italic text-gray-500">
-                Công việc sắp xếp theo thứ tự ngày giao gần nhất, số lượng {pagination.totalCount} việc
+                Công việc sắp xếp theo qqqwert tự ngày giao gần nhất, số lượng {pagination.totalCount} việc
               </div>
             </div>
             <Space>
@@ -187,12 +229,7 @@ function CongViecLanhDao() {
                       style={{ width: '100%' }}
                       mode="multiple"
                       value={searchValue.don_vi_chu_tri}
-                      onChange={value =>
-                        setSearchValue({
-                          ...searchValue,
-                          don_vi_chu_tri: value
-                        })
-                      }
+                      onChange={value => updateSearchValue({ don_vi_chu_tri: value, p: DEFAULT_PAGE })}
                       allowClear
                     />
                   </Flex>
@@ -200,12 +237,7 @@ function CongViecLanhDao() {
                     <Select
                       placeholder="Chọn trạng thái"
                       value={searchValue.status}
-                      onChange={value => {
-                        setSearchValue({
-                          ...searchValue,
-                          status: value
-                        });
-                      }}
+                      onChange={value => updateSearchValue({ status: value, p: DEFAULT_PAGE })}
                       style={{ width: 200 }}
                       options={[
                         {
@@ -233,12 +265,7 @@ function CongViecLanhDao() {
                     <Select
                       placeholder="Chọn hạn"
                       value={searchValue.expired}
-                      onChange={value => {
-                        setSearchValue({
-                          ...searchValue,
-                          expired: value
-                        });
-                      }}
+                      onChange={value => updateSearchValue({ expired: value, p: DEFAULT_PAGE })}
                       style={{ width: 150 }}
                       options={[
                         {
@@ -280,11 +307,17 @@ function CongViecLanhDao() {
                 pageSize: pagination?.pageSize,
                 total: pagination?.total,
                 current: searchValue.p,
-                onChange: page => {
-                  setSearchValue({
-                    ...searchValue,
-                    p: page
-                  });
+                showSizeChanger: true,
+                pageSizeOptions: ['10', '20', '50', '100'],
+                onChange: (page, pageSize) => {
+                  updateSearchValue({ p: page });
+
+                  if (pageSize !== pagination.pageSize) {
+                    setPagination(prev => ({
+                      ...prev,
+                      pageSize
+                    }));
+                  }
                 },
                 size: 'default',
                 style: {
@@ -420,21 +453,19 @@ function CongViecLanhDao() {
                         placement="left"
                         icon={<TrashFill size={26} style={{ margin: '0 10px 0 0' }} color="#EF5350"></TrashFill>}
                       >
-                        <Button
-                          variant="filled"
-                          color="danger"
-                          icon={<TrashFill color="#EF5350" size={16}></TrashFill>}
-                          style={{ border: '1px solid #EF535080', display: 'flex', alignItems: 'center' }}
-                        />
+                        <Button variant="filled" color="danger" style={{ border: '1px solid #EF535080' }}>
+                          <TrashFill color="#EF5350" size={16}></TrashFill>
+                        </Button>
                       </Popconfirm>
                       {!value && (
                         <Button
                           variant="filled"
                           color="green"
-                          icon={<Check2Square size={18} color="green" />}
                           onClick={() => handleComplete(row.id)}
-                          style={{ border: '1px solid #39b145', display: 'flex', alignItems: 'center' }}
-                        />
+                          style={{ border: '1px solid #39b145' }}
+                        >
+                          <Check2Square size={18} color="green" />
+                        </Button>
                       )}
                     </Space>
                   )
@@ -450,12 +481,12 @@ function CongViecLanhDao() {
             danhmuc={danhmuc}
             onFinish={() => {
               setModalCongViec(false);
-              fetchData();
+              fetchDanhMuc();
             }}
           ></FormCongViec>
         </Drawer>
       )}
-    </>
+    </div>
   );
 }
 

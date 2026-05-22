@@ -17,6 +17,8 @@ import SettingsDoanhThu from './pages/SettingsDoanhThu';
 import MobilePageHome from './pages/MobilePage';
 import MobilePageLayout from './pages/MobilePage/Layout';
 import ProfileScreen from './pages/MobilePage/ProfileScreen';
+import VanbanDieuHanheOffice from './pages/Admin/vanbandieuhanh';
+import AdminLayout from './components/AdminLayout';
 
 function App() {
   return (
@@ -35,6 +37,9 @@ function App() {
         <Route path="/congviec/:id" element={<ExamDetail />} />
         <Route path="/report" element={<ReportPage />} />
         <Route path="/report/settings" element={<SettingsDoanhThu />} />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route path="vanbandieuhanh" element={<VanbanDieuHanheOffice />} />
+        </Route>
       </Route>
       {/* Mobile routes use their own layout */}
       <Route path="mobile" element={<MobilePageLayout />}>
