@@ -1,0 +1,8 @@
+### 
+POST https://eoffice.vnpt.vn/qlvb/api/login/v6/
+Content-Type: application/json
+
+{
+  "username": "thuandn.nan",
+  "password": "Thuan@321"
+}
