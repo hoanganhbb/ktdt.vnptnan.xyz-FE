@@ -66,7 +66,7 @@ function LoadCongViec({ onSuccess }) {
         setIsLoading(false);
       }
     } catch (error) {
-      toast.error('Tài khoản đăng nhập không chính xác, vui lòng đăng nhập lại sau 5p');
+      toast.error('Tài khoản đăng nhập không chính xác');
     }
   };
 
@@ -85,7 +85,7 @@ function LoadCongViec({ onSuccess }) {
         fetchData(result);
       }
     } catch (error) {
-      toast.error('Tài khoản đăng nhập không chính xác, vui lòng đăng nhập lại sau 5p');
+      toast.error('Tài khoản đăng nhập không chính xác');
       setIsLoading(false);
     }
   };
